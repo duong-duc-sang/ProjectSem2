@@ -9,7 +9,8 @@ package com.aptech.entity;
  *
  * @author ducsang
  */
-public class RoomEntity extends BaseEntity{
+public class RoomEntity extends BaseEntity {
+
     public static final String Table_Name = "Room";
     private String name;
     private String value;
@@ -29,6 +30,10 @@ public class RoomEntity extends BaseEntity{
     public void setValue(String value) {
         this.value = value;
     }
-    
-    
+
+    @Override
+    protected String getTableName() {
+        return Table_Name;
+    }
+
 }

@@ -133,6 +133,11 @@ public class PatientServiceEntity extends BaseEntity{
     public void setInvoiceId(int invoiceId) {
         this.invoiceId = invoiceId;
     }
+
+    @Override
+    protected String getTableName() {
+        return Table_Name;
+    }
     
     
     

@@ -11,8 +11,9 @@ import java.time.LocalDateTime;
  *
  * @author ducsang
  */
-public class PatientEntiry extends BaseEntity{
-    public static final String Table_Name = "Patient";
+public class PatientEntity extends BaseEntity implements I_Persistent {
+
+    public static final String Table_Name = "HIS_PatientHistory";
     private String name;
     private String value;
     private String patientDocument;
@@ -22,7 +23,9 @@ public class PatientEntiry extends BaseEntity{
     private LocalDateTime timeGoIn;
     private LocalDateTime tineGoOut;
     private String idNo;
-    private String phoneNumber;
+    private String telNo;
+
+    public static String COLUMNNAME_Name = "Name";
 
     public String getName() {
         return name;
@@ -31,6 +34,7 @@ public class PatientEntiry extends BaseEntity{
     public void setName(String name) {
         this.name = name;
     }
+    public static String COLUMNNAME_Value = "Value";
 
     public String getValue() {
         return value;
@@ -40,6 +44,8 @@ public class PatientEntiry extends BaseEntity{
         this.value = value;
     }
 
+    public static String COLUMNNAME_PatientDocument = "PatientDocument";
+
     public String getPatientDocument() {
         return patientDocument;
     }
@@ -47,6 +53,7 @@ public class PatientEntiry extends BaseEntity{
     public void setPatientDocument(String patientDocument) {
         this.patientDocument = patientDocument;
     }
+    public static String COLUMNNAME_Address = "Address";
 
     public String getAddress() {
         return address;
@@ -56,6 +63,8 @@ public class PatientEntiry extends BaseEntity{
         this.address = address;
     }
 
+    public static String COLUMNNAME_Gender = "Gender";
+
     public String getGender() {
         return gender;
     }
@@ -63,6 +72,8 @@ public class PatientEntiry extends BaseEntity{
     public void setGender(String gender) {
         this.gender = gender;
     }
+
+    public static String COLUMNNAME_Birthday = "Birthday";
 
     public LocalDateTime getBirthday() {
         return birthday;
@@ -72,6 +83,8 @@ public class PatientEntiry extends BaseEntity{
         this.birthday = birthday;
     }
 
+    public static String COLUMNNAME_TimeGoIn = "TimeGoIn";
+
     public LocalDateTime getTimeGoIn() {
         return timeGoIn;
     }
@@ -79,6 +92,8 @@ public class PatientEntiry extends BaseEntity{
     public void setTimeGoIn(LocalDateTime timeGoIn) {
         this.timeGoIn = timeGoIn;
     }
+
+    public static String COLUMNNAME_TimeGoOut = "TimeGoOut";
 
     public LocalDateTime getTineGoOut() {
         return tineGoOut;
@@ -88,6 +103,8 @@ public class PatientEntiry extends BaseEntity{
         this.tineGoOut = tineGoOut;
     }
 
+    public static String COLUMNNAME_IDNo = "ID_No";
+
     public String getIdNo() {
         return idNo;
     }
@@ -96,13 +113,20 @@ public class PatientEntiry extends BaseEntity{
         this.idNo = idNo;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public static String COLUMNNAME_TelNo = "Tel_No";
+
+    public String getTelNo() {
+        return telNo;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setTelNo(String telNo) {
+        this.telNo = telNo;
     }
-    
-    
+
+    @Override
+
+    protected String getTableName() {
+        return Table_Name;
+    }
+
 }

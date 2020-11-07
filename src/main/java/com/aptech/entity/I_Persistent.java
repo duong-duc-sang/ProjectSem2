@@ -5,13 +5,12 @@
  */
 package com.aptech.entity;
 
-import java.sql.ResultSet;
-import java.util.Properties;
-
 /**
  *
  * @author ducsang
  */
-public abstract class PO {
-      protected abstract boolean beforeSave();
-   }
+public interface I_Persistent {
+    public boolean create();
+    public boolean update();
+    public boolean delete();
+}

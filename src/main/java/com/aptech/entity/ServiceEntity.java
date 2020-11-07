@@ -52,6 +52,11 @@ public class ServiceEntity extends BaseEntity{
     public void setUnitPrice(BigDecimal unitPrice) {
         this.unitPrice = unitPrice;
     }
+
+    @Override
+    protected String getTableName() {
+        return Table_Name;
+    }
     
     
 }

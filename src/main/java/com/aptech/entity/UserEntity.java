@@ -11,15 +11,18 @@ import java.util.Properties;
  *
  * @author ducsang
  */
-public class UserEntity extends BaseEntity{
-     
+public class UserEntity extends BaseEntity {
+
     private String name;
     private String password;
     private String email;
-    private String phoneNumber;
+    private String telNo;
 
     public UserEntity() {
+        super();
     }
+
+    public static String COLUMNNAME_Name = "Name";
 
     public String getName() {
         return name;
@@ -29,6 +32,8 @@ public class UserEntity extends BaseEntity{
         this.name = name;
     }
 
+    public static String COLUMNNAME_Password = "Password";
+
     public String getPassword() {
         return password;
     }
@@ -36,6 +41,8 @@ public class UserEntity extends BaseEntity{
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public static String COLUMNNAME_Email = "Email";
 
     public String getEmail() {
         return email;
@@ -45,15 +52,21 @@ public class UserEntity extends BaseEntity{
         this.email = email;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public static String COLUMNNAME_Tel_No = "Tel_No";
+
+    public String getTelNo() {
+        return telNo;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setTelNo(String telNo) {
+        this.telNo = telNo;
     }
-    
-    public static final String Table_Name = "User";
-    
-    
+
+    public static final String Table_Name = "AP_User";
+
+    @Override
+    protected String getTableName() {
+        return Table_Name;
+    }
+
 }

@@ -88,6 +88,11 @@ public class InvoiceEntity extends BaseEntity{
     public void setStatus(String status) {
         this.status = status;
     }
+
+    @Override
+    protected String getTableName() {
+        return Table_Name;
+    }
     
     
 }
