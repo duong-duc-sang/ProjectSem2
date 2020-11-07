@@ -5,6 +5,10 @@
  */
 package com.aptech.view;
 
+import com.aptech.service.Login;
+import java.awt.Window;
+import java.awt.event.KeyEvent;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 /**
@@ -47,10 +51,23 @@ public class LoginFrame extends javax.swing.JFrame {
         loginPanel.setBackground(new java.awt.Color(223, 241, 240));
         loginPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Login", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 14), new java.awt.Color(241, 7, 38))); // NOI18N
 
+        txtPassword.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtPasswordKeyPressed(evt);
+            }
+        });
+
         btnLogin.setBackground(new java.awt.Color(7, 142, 236));
+        btnLogin.setIcon(new javax.swing.ImageIcon(getClass().getResource("/button-ok-icon.png"))); // NOI18N
         btnLogin.setText("Login");
+        btnLogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLoginActionPerformed(evt);
+            }
+        });
 
         btnCancel.setBackground(new java.awt.Color(249, 165, 29));
+        btnCancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Actions-exit-icon.png"))); // NOI18N
         btnCancel.setText("Cancel");
 
         jLabel2.setBackground(new java.awt.Color(7, 136, 245));
@@ -121,6 +138,16 @@ public class LoginFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+        validateLogin();
+    }//GEN-LAST:event_btnLoginActionPerformed
+
+    private void txtPasswordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPasswordKeyPressed
+         if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+           validateLogin();
+       }
+    }//GEN-LAST:event_txtPasswordKeyPressed
+
     /**
      * @param args the command line arguments
      */
@@ -154,6 +181,53 @@ public class LoginFrame extends javax.swing.JFrame {
                 new LoginFrame().setVisible(true);
             }
         });
+    }
+    
+    private boolean validateField(){
+        String userName = txtUsername.getText();
+        String pw = txtPassword.getText();
+        StringBuilder str = new StringBuilder();
+        if(userName == null || userName.isEmpty()){
+            str.append("UserName");
+        }
+        if(pw == null || pw.isEmpty()){
+            if(str.length() != 0)
+                str.append(", ");
+            str.append("Password");
+               
+        }
+        
+        if(str.length() != 0){
+            showMsg("Please input " + str.toString());
+            return false;
+        }
+        return true;
+    }
+    
+    private void validateLogin(){
+       if(!validateField()){
+            return;
+        }
+        
+        if(!checkLogin()){
+            return;
+        }
+        
+        RolePanel u = new RolePanel(txtUsername.getText());
+        u.setVisible(true);
+        dispose(); 
+    }
+    
+    private boolean checkLogin(){
+        Login login = new Login(txtUsername.getText(), txtPassword.getText());
+        if(!login.checkLogin()){
+            showMsg("UserName, Password Incorrect");
+            return false;
+        }
+        return true;
+    }
+     private void showMsg(String msg){
+        JOptionPane.showMessageDialog(this, msg);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

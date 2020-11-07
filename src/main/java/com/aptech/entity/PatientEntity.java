@@ -125,7 +125,7 @@ public class PatientEntity extends BaseEntity implements I_Persistent {
 
     @Override
 
-    protected String getTableName() {
+    public String getTableName() {
         return Table_Name;
     }
 

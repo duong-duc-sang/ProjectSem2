@@ -65,7 +65,7 @@ public class UserEntity extends BaseEntity {
     public static final String Table_Name = "AP_User";
 
     @Override
-    protected String getTableName() {
+    public String getTableName() {
         return Table_Name;
     }
 

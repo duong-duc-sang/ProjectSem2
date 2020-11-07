@@ -236,6 +236,12 @@ public class DB {
         return no;
     }	//	executeUpdate
 
+    public static PreparedStatement prepareStatement(String sql) throws SQLException{
+        conn = getConnection();
+        return conn.prepareStatement(sql);
+    }
+    
+    
     public static int getNextID(String tableName) {
         int m_sequence_id = getNextval(tableName);
         if (m_sequence_id == -1) {

@@ -32,7 +32,7 @@ public class RoomEntity extends BaseEntity {
     }
 
     @Override
-    protected String getTableName() {
+    public String getTableName() {
         return Table_Name;
     }
 

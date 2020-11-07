@@ -5,6 +5,12 @@
  */
 package com.aptech.view;
 
+import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import javax.swing.Timer;
+
 /**
  *
  * @author ducsang
@@ -49,10 +55,10 @@ public class PatientFrame extends javax.swing.JFrame {
         jButton4 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Patient");
+        setTitle("Reception");
 
         jPanel1.setBackground(new java.awt.Color(192, 211, 211));
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Register", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 12), new java.awt.Color(240, 23, 23))); // NOI18N
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Reception Patient", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 12), new java.awt.Color(240, 23, 23))); // NOI18N
 
         jPanel2.setBackground(new java.awt.Color(230, 241, 239));
 
@@ -60,6 +66,7 @@ public class PatientFrame extends javax.swing.JFrame {
         jLabel3.setText("BirthDay");
 
         jButton2.setBackground(new java.awt.Color(238, 199, 55));
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/page-edit-icon.png"))); // NOI18N
         jButton2.setText("Edit");
         jButton2.setEnabled(false);
 
@@ -68,7 +75,8 @@ public class PatientFrame extends javax.swing.JFrame {
 
         jButton3.setBackground(new java.awt.Color(25, 48, 241));
         jButton3.setForeground(new java.awt.Color(237, 120, 159));
-        jButton3.setText("Choice Service");
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/pencil-red-icon.png"))); // NOI18N
+        jButton3.setText("Service");
         jButton3.setEnabled(false);
 
         txtGender.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Male", "Female" }));
@@ -83,6 +91,7 @@ public class PatientFrame extends javax.swing.JFrame {
         jLabel2.setText("Gender");
 
         jButton1.setBackground(new java.awt.Color(16, 189, 241));
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/add-icon.png"))); // NOI18N
         jButton1.setText("Save");
         jButton1.setEnabled(false);
 
@@ -98,6 +107,7 @@ public class PatientFrame extends javax.swing.JFrame {
 
         jButton4.setBackground(new java.awt.Color(25, 48, 241));
         jButton4.setForeground(new java.awt.Color(237, 120, 159));
+        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Devices-printer-icon.png"))); // NOI18N
         jButton4.setText("Print");
         jButton4.setEnabled(false);
 
@@ -131,16 +141,16 @@ public class PatientFrame extends javax.swing.JFrame {
                     .addComponent(txtAdress)
                     .addComponent(txtTelNo))
                 .addGap(33, 33, 33)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
                         .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
                         .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(31, 31, 31))
+                .addGap(19, 19, 19))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -173,7 +183,7 @@ public class PatientFrame extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtTelNo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5))
-                .addContainerGap(45, Short.MAX_VALUE))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
 
         jPanel2Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jLabel1, jLabel2, jLabel3, jLabel4, jLabel5});
@@ -205,7 +215,7 @@ public class PatientFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 166, Short.MAX_VALUE))
+                .addContainerGap(183, Short.MAX_VALUE))
         );
 
         pack();

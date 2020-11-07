@@ -119,7 +119,7 @@ public abstract class BaseEntity extends PO {
         return 0;
     }
     
-    protected  abstract String getTableName();
+    public  abstract String getTableName();
     
     public int getNextId(){
         int no = saveNew_getID();
