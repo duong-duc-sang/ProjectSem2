@@ -27,7 +27,7 @@ public class DB {
     private static Connection conn = null;
     private static BasicDataSource ds = new BasicDataSource();
     private static Logger log = Logger.getLogger(DB.class.getName());
-    public static final int		INIT_NO = 1000;
+    public static final int INIT_NO = 1000;
 
     static {
         ds.setDriverClassName(DbConfiguration.DB_DRIVER);
@@ -196,6 +196,10 @@ public class DB {
         return executeUpdate(sql, params, 0);
     }
 
+    public static int executeUpdateEx(String sql, Object... params) {
+        return executeUpdate(sql, params, 0);
+    }
+
     public static int executeUpdate(String sql, Object[] params, int timeOut) {
         if (sql == null || sql.length() == 0) {
             throw new IllegalArgumentException("Required parameter missing - " + sql);
@@ -216,6 +220,7 @@ public class DB {
             conn.commit();
 
         } catch (SQLException e) {
+            e.printStackTrace();
             if (conn != null) {
 
                 try {
@@ -223,9 +228,6 @@ public class DB {
                 } catch (SQLException ex) {
 
                 }
-            }
-            if (log.isLoggable(Level.FINE)) {
-                log.fine("No Value " + sql);
             }
             //	throw new DBException(e);
         } finally {
@@ -236,17 +238,24 @@ public class DB {
         return no;
     }	//	executeUpdate
 
-    public static PreparedStatement prepareStatement(String sql) throws SQLException{
+    public static PreparedStatement prepareStatement(String sql) throws SQLException {
         conn = getConnection();
         return conn.prepareStatement(sql);
     }
-    
-    
+
+    public static ResultSet resultSet(String sql) throws SQLException {
+        PreparedStatement pstm = null;
+        ResultSet rs = null;
+        pstm = prepareStatement(sql);
+        rs = pstm.executeQuery();
+        return rs;
+    }
+
     public static int getNextID(String tableName) {
         int m_sequence_id = getNextval(tableName);
         if (m_sequence_id == -1) {
             // try to create the sequence and try again
-            if(!createSequence(tableName, 1, INIT_NO, Integer.MAX_VALUE, INIT_NO)){
+            if (!createSequence(tableName, 1, INIT_NO, Integer.MAX_VALUE, INIT_NO)) {
                 return INIT_NO;
             }
             m_sequence_id = getNextval(tableName);
@@ -256,7 +265,7 @@ public class DB {
 
     public static int getNextval(String tableName) {
         try {
-           return getSQLValueEx("SELECT nextval('" + tableName.toLowerCase() + "_SQ')"); 
+            return getSQLValueEx("SELECT nextval('" + tableName.toLowerCase() + "_SQ')");
         } catch (Exception e) {
             createSequence(tableName, 1, INIT_NO, Integer.MAX_VALUE, INIT_NO);
             return INIT_NO;
@@ -273,7 +282,7 @@ public class DB {
         }
         //
         // New Sequence
-        
+
         if (cnt == 0) {
             no = DB.executeUpdate("CREATE SEQUENCE " + name.toUpperCase()
                     + " INCREMENT BY " + increment

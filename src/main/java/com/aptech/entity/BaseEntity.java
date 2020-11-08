@@ -8,13 +8,15 @@ package com.aptech.entity;
 import com.aptech.db.DB;
 import java.time.LocalDateTime;
 import java.util.Properties;
-import org.apache.log4j.Logger;
+import java.util.logging.Logger;
+import org.apache.commons.lang.StringUtils;
+
 
 /**
  *
  * @author ducsang
  */
-public abstract class BaseEntity extends PO {
+public abstract class BaseEntity {
 
     protected int id;
     protected String isActive;
@@ -23,14 +25,14 @@ public abstract class BaseEntity extends PO {
     protected int createdBy;
     protected LocalDateTime updated;
     protected int updatedBy;
-    final static Logger log = Logger.getLogger(BaseEntity.class);
+    final static Logger log = Logger.getLogger(BaseEntity.class.getName());
 
     public int getId() {
         return id;
     }
 
-    public final void setId() {
-        this.id = getNextId();
+    public final void setId(int id) {
+        this.id = id;
     }
 
     public String getIsActive() {
@@ -81,13 +83,6 @@ public abstract class BaseEntity extends PO {
         this.updatedBy = updatedBy;
     }
 
-    public BaseEntity() {
-        setCreated();
-        Properties ctx = System.getProperties();
-        createdBy = getContextAsInt(ctx, "#AP_User_ID");
-        setCreatedBy(createdBy);
-    }
-
     public static int getContextAsInt(Properties ctx, String context) {
         if (ctx == null || context == null) {
             throw new IllegalArgumentException("Require Context");
@@ -100,7 +95,7 @@ public abstract class BaseEntity extends PO {
         try {
             return Integer.parseInt(s);
         } catch (NumberFormatException e) {
-            log.error(e);
+            log.severe(e.getMessage());
         }
         return 0;
     }
@@ -118,35 +113,71 @@ public abstract class BaseEntity extends PO {
         }
         return 0;
     }
-    
-    public  abstract String getTableName();
-    
-    public int getNextId(){
+
+    public abstract String getTableName();
+
+    public int getNextId() {
         int no = saveNew_getID();
-        if(no == 0){
+        if (no == 0) {
             no = DB.getNextID(getTableName());
         }
-        
-        if(getId() > 0){
+
+        if (getId() > 0) {
             no = getId();
         }
         return no;
     }
-    
-    public boolean create() {
+
+    private boolean create() {
+        int length = getValueColumns().length;
+        String[] values = new String[length];
+        String paras = StringUtils.join(values, "?,") + "?";
+        String sql = "INSERT INTO " + getTableName() + "(" + getColumnNameStr() + ") VALUES(" + paras + ")";
+        int no = DB.executeUpdateEx(sql, getValueColumns());
+        if (no != 1) {
+            return false;
+        }
 
         return true;
     }
 
-    public boolean update() {
+    private boolean update() {
+        String sql = "UPDATE " + getTableName() + " SET " + getColumnNameUpdate() + "=?" + " WHERE " + getTableName() + "_ID = " + getId();
+        int no = DB.executeUpdate(sql, getValueUpdate());
+        if (no != 1) {
+            return false;
+        }
+
         return true;
     }
 
     public boolean delete() {
         return true;
     }
-
-    protected boolean beforeSave() {
+    
+    public boolean save(){
+        if(isNew()){
+            setId(getNextId());
+            if(!create()){
+                return false;
+            }
+        }else{
+            if(!update()){
+                return false;
+            }
+        }
         return true;
     }
+    
+    public boolean isNew(){
+        return saveNew_getID() == 0;
+    }
+
+    protected abstract String getColumnNameStr();
+
+    protected abstract Object[] getValueColumns();
+    
+    protected  abstract String getColumnNameUpdate();
+    
+    protected  abstract Object[] getValueUpdate();
 }

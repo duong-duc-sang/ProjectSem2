@@ -6,6 +6,9 @@
 package com.aptech.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -20,11 +23,17 @@ public class PatientEntity extends BaseEntity implements I_Persistent {
     private String address;
     private String gender;
     private LocalDateTime birthday;
+    private String birthdayStr;
+    private int age;
     private LocalDateTime timeGoIn;
-    private LocalDateTime tineGoOut;
+    private LocalDateTime timeGoOut;
     private String idNo;
     private String telNo;
+    private int departmentId;
 
+    public PatientEntity(){
+        super();
+    }
     public static String COLUMNNAME_Name = "Name";
 
     public String getName() {
@@ -73,6 +82,25 @@ public class PatientEntity extends BaseEntity implements I_Persistent {
         this.gender = gender;
     }
 
+    public static String COLUMNNAME_TelNo = "Tel_No";
+
+    public String getTelNo() {
+        return telNo;
+    }
+
+    public void setTelNo(String telNo) {
+        this.telNo = telNo;
+    }
+
+    public static String COLUMNNAME_IDNo = "ID_No";
+
+    public String getIdNo() {
+        return idNo;
+    }
+
+    public void setIdNo(String idNo) {
+        this.idNo = idNo;
+    }
     public static String COLUMNNAME_Birthday = "Birthday";
 
     public LocalDateTime getBirthday() {
@@ -81,6 +109,36 @@ public class PatientEntity extends BaseEntity implements I_Persistent {
 
     public void setBirthday(LocalDateTime birthday) {
         this.birthday = birthday;
+    }
+
+    public static String COLUMNNAME_BirthdayStr = "BirthdayStr";
+
+    public String getBirthdayStr() {
+        return birthdayStr;
+    }
+
+    public void setBirthdayStr(String birthdayStr) {
+        this.birthdayStr = birthdayStr;
+    }
+
+    public static String COLUMNNAME_Age = "Age";
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public static String COLUMNNAME_Department_ID = "Department_ID";
+
+    public int getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(int departmentId) {
+        this.departmentId = departmentId;
     }
 
     public static String COLUMNNAME_TimeGoIn = "TimeGoIn";
@@ -95,32 +153,12 @@ public class PatientEntity extends BaseEntity implements I_Persistent {
 
     public static String COLUMNNAME_TimeGoOut = "TimeGoOut";
 
-    public LocalDateTime getTineGoOut() {
-        return tineGoOut;
+    public LocalDateTime getTimeGoOut() {
+        return timeGoOut;
     }
 
-    public void setTineGoOut(LocalDateTime tineGoOut) {
-        this.tineGoOut = tineGoOut;
-    }
-
-    public static String COLUMNNAME_IDNo = "ID_No";
-
-    public String getIdNo() {
-        return idNo;
-    }
-
-    public void setIdNo(String idNo) {
-        this.idNo = idNo;
-    }
-
-    public static String COLUMNNAME_TelNo = "Tel_No";
-
-    public String getTelNo() {
-        return telNo;
-    }
-
-    public void setTelNo(String telNo) {
-        this.telNo = telNo;
+    public void setTineGoOut(LocalDateTime timeGoOut) {
+        this.timeGoOut = timeGoOut;
     }
 
     @Override
@@ -128,5 +166,68 @@ public class PatientEntity extends BaseEntity implements I_Persistent {
     public String getTableName() {
         return Table_Name;
     }
+    
+    public static String[] columnNames(){
+        List<String> columns = new ArrayList<>();
+        columns.add(Table_Name + "_ID");
+        columns.add(COLUMNNAME_Name);
+        columns.add(COLUMNNAME_PatientDocument);
+        columns.add(COLUMNNAME_Value);
+        columns.add(COLUMNNAME_Birthday);
+        columns.add(COLUMNNAME_BirthdayStr);
+        columns.add(COLUMNNAME_Age);
+        columns.add(COLUMNNAME_Gender);
+        columns.add(COLUMNNAME_Address);
+        columns.add(COLUMNNAME_IDNo);
+        columns.add(COLUMNNAME_TelNo);
+        columns.add(COLUMNNAME_Department_ID);
+        columns.add(COLUMNNAME_TimeGoIn);
+        columns.add(COLUMNNAME_TimeGoOut);
+        String[] values = new String[columns.size()];
+        columns.toArray(values);
+        return values;
+    }
+    
+    public static String getHeaderNames(){
+         String[] columns = columnNames();
+        return StringUtils.join(columns, ", ");
+    }
+
+    public String getColumnNameStr() {
+        String[] columns = columnNames();
+        return StringUtils.join(columns, ", ");
+    }
+
+    public Object[] getValueColumns() {
+        List<Object> columns = new ArrayList<>();
+        columns.add(getId());
+        columns.add(getName());
+        columns.add(getPatientDocument());
+        columns.add(getValue());
+        columns.add(getBirthday());
+        columns.add(getBirthdayStr());
+        columns.add(getAge());
+        columns.add(getGender());
+        columns.add(getAddress());
+        columns.add(getIdNo());
+        columns.add(getTelNo());
+        columns.add(getDepartmentId());
+        columns.add(getTimeGoIn());
+        columns.add(getTimeGoOut());
+        Object[] obs = new Object[columns.size()];
+        columns.toArray(obs);
+        return obs;
+    }
+
+    @Override
+    protected String getColumnNameUpdate() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    protected Object[] getValueUpdate() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 
 }

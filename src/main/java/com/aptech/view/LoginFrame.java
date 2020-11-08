@@ -5,11 +5,11 @@
  */
 package com.aptech.view;
 
+import com.aptech.db.DB;
 import com.aptech.service.Login;
-import java.awt.Window;
 import java.awt.event.KeyEvent;
+import java.util.Properties;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 
 /**
  *
@@ -224,6 +224,10 @@ public class LoginFrame extends javax.swing.JFrame {
             showMsg("UserName, Password Incorrect");
             return false;
         }
+        
+        int userID = DB.getSQLValueEx("SELECT AP_User_ID FROM AP_User WHERE Name = ? AND Password = ?", login.getUserName(), login.getPassword());
+        Properties ctx = System.getProperties();
+        ctx.setProperty("#AP_User_ID", ""+userID);
         return true;
     }
      private void showMsg(String msg){

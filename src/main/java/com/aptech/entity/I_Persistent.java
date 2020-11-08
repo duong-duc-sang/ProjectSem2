@@ -10,7 +10,6 @@ package com.aptech.entity;
  * @author ducsang
  */
 public interface I_Persistent {
-    public boolean create();
-    public boolean update();
+    public boolean save();
     public boolean delete();
 }

@@ -202,7 +202,7 @@ public class UserFrame extends javax.swing.JFrame {
         String password = txtPassword.getText();
         String email = txtEmail.getText();
         UserEntity user = new UserEntity();
-        user.setId();
+        user.setId(DB.getNextID(user.Table_Name));
         user.setEmail(email);
         user.setPassword(password);
         user.setName(userName);
