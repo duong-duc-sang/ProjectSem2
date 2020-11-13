@@ -409,17 +409,6 @@ Người bệnh khám theo thứ tự bàn 1 -> bàn 2.
 				</textElement>
 				<text><![CDATA[]]></text>
 			</staticText>
-			<subreport>
-				<reportElement positionType="Float" x="19" y="30" width="85" height="80" isRemoveLineWhenBlank="true" uuid="59195d61-d868-4a4b-91bf-5cbed2184d33"/>
-				<subreportParameter name="SUBREPORT_DIR">
-					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="QRCode">
-					<subreportParameterExpression><![CDATA[$F{HIS_PATIENTDOCUMENT}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "QRCode.jasper"]]></subreportExpression>
-			</subreport>
 		</band>
 	</summary>
 </jasperReport>

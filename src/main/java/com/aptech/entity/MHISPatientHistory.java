@@ -8,6 +8,7 @@ package com.aptech.entity;
 import com.aptech.db.DB;
 import com.aptech.utils.TimeUtil;
 import com.aptech.utils.Util;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -72,85 +73,102 @@ public class MHISPatientHistory extends PatientEntity {
                 return false;
             }
             setBirthday(birthday);
-            
+
         }
         setAge(TimeUtil.calculateAge(getBirthday(), getTimeGoIn()));
         return true;
     }
-    
-    public boolean validateBeforeSave(boolean newRecord){
-         if(!validateFillFields()){
-            return false;
+
+    public static MHISPatientHistory get(int HIS_PatientHistory_ID) {
+        String sql = "SELECT * FROM " + Table_Name + " WHERE " + COLUMNNAME_HIS_PatientHistory_ID + " = " + HIS_PatientHistory_ID;
+        PreparedStatement pstm = null;
+        ResultSet rs = null;
+        MHISPatientHistory ph = new MHISPatientHistory();
+        try {
+            pstm = DB.prepareStatement(sql);
+            rs = pstm.executeQuery();
+            if (rs.next()) {
+                ph.setId(rs.getInt(COLUMNNAME_HIS_PatientHistory_ID));
+                ph.setName(rs.getString(COLUMNNAME_Name));
+                ph.setBirthday(rs.getTimestamp(COLUMNNAME_Birthday).toLocalDateTime());
+                ph.setGender(rs.getString(COLUMNNAME_Gender));
+                ph.setPatientDocument(rs.getString(COLUMNNAME_PatientDocument));
+                ph.setValue(rs.getString(COLUMNNAME_Value));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DB.close(rs, pstm);
+            pstm = null;
+            rs = null;
         }
-         
-        if(!autoFillFieldFirstTime(newRecord)){
-            return false;
-        }
-       
-       return true; 
+
+        return ph;
     }
-    
-    private boolean validateFillFields(){
+
+    public boolean validateBeforeSave(boolean newRecord) {
+        if (!validateFillFields()) {
+            return false;
+        }
+
+        if (!autoFillFieldFirstTime(newRecord)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean validateFillFields() {
         StringBuilder err = new StringBuilder();
-        if(getName() == null || getName().isEmpty()){
+        if (getName() == null || getName().isEmpty()) {
             err.append(COLUMNNAME_Name);
         }
-        
-        if(getGender() == null || getGender().isEmpty()){
-            if(err.length() != 0)
+
+        if (getGender() == null || getGender().isEmpty()) {
+            if (err.length() != 0) {
                 err.append(", ");
+            }
             err.append(COLUMNNAME_Gender);
         }
-        
-        if(getBirthdayStr() == null || getBirthdayStr().isEmpty()){
-            if(err.length() != 0)
+
+        if (getBirthdayStr() == null || getBirthdayStr().isEmpty()) {
+            if (err.length() != 0) {
                 err.append(", ");
+            }
             err.append(COLUMNNAME_Birthday);
         }
-        
-        if(getAddress() == null || getAddress().isEmpty()){
-             if(err.length() != 0)
+
+        if (getAddress() == null || getAddress().isEmpty()) {
+            if (err.length() != 0) {
                 err.append(", ");
+            }
             err.append(COLUMNNAME_Address);
         }
-        
-        if(err.length() != 0){
+
+        if (err.length() != 0) {
             JOptionPane.showMessageDialog(null, "Please Input " + err.toString());
             return false;
         }
-        
+
         return true;
     }
-    
-    private boolean autoFillFieldFirstTime(boolean newRecord){
-        if(newRecord){
+
+    private boolean autoFillFieldFirstTime(boolean newRecord) {
+        if (newRecord) {
             setTimeGoIn(LocalDateTime.now());
         }
-        
-        if(!generatePatientDocument(newRecord)){
+
+        if (!generatePatientDocument(newRecord)) {
             return false;
         }
-        if(!generatePatientValue(newRecord)){
+        if (!generatePatientValue(newRecord)) {
             return false;
         }
-        
-        if(!calculateAge(getBirthdayStr())){
+
+        if (!calculateAge(getBirthdayStr())) {
             return false;
         }
         return true;
-    }
-    
-    
-    public static ResultSet getResultSet(){
-        String sql = "SELECT " + getHeaderNames() + " FROM " + Table_Name + " WHERE IsDeleted = 'N'";
-        ResultSet rs = null;
-        try {
-            rs = DB.resultSet(sql);
-        } catch (SQLException ex) {
-            Logger.getLogger(MHISPatientHistory.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        return rs;
     }
 
 }

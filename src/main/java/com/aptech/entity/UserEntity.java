@@ -5,6 +5,8 @@
  */
 package com.aptech.entity;
 
+import java.util.List;
+
 /**
  *
  * @author ducsang
@@ -15,7 +17,7 @@ public class UserEntity extends BaseEntity {
     private String password;
     private String email;
     private String telNo;
-
+   public static String COLUMNNAME_AP_User_ID = "AP_User_ID";
     public UserEntity() {
         super();
     }
@@ -74,7 +76,7 @@ public class UserEntity extends BaseEntity {
 
     @Override
     protected Object[] getValueColumns() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return null;
     }
 
     @Override
@@ -87,7 +89,6 @@ public class UserEntity extends BaseEntity {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    
-    
+     
 
 }

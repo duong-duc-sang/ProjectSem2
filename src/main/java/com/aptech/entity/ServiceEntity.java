@@ -6,24 +6,16 @@
 package com.aptech.entity;
 
 import com.aptech.db.DB;
-import static com.aptech.entity.PatientEntity.COLUMNNAME_Address;
-import static com.aptech.entity.PatientEntity.COLUMNNAME_Birthday;
-import static com.aptech.entity.PatientEntity.COLUMNNAME_Gender;
-import static com.aptech.entity.PatientEntity.COLUMNNAME_Name;
-import static com.aptech.entity.PatientEntity.Table_Name;
-import static com.aptech.entity.PatientEntity.getHeaderNames;
-import com.aptech.utils.Util;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.internal.compiler.ast.ThisReference;
+import java.sql.PreparedStatement;
+import java.util.Vector;
 
 /**
  *
@@ -36,6 +28,7 @@ public class ServiceEntity extends BaseEntity {
     private String serviceType;
     private BigDecimal unitPrice;
     public static final String Table_Name = "HIS_Service";
+    public static final String COLUMNNAME_HIS_Service_ID = "HIS_Service_ID";
 
     public ServiceEntity() {
     }
@@ -83,14 +76,16 @@ public class ServiceEntity extends BaseEntity {
     }
 
     @Override
-    public String getColumnNameUpdate(){
-        List<String> ls = getColumnNames();
-        ls.remove(0);
-        String[] columns = new String[ls.size()];
-        ls.toArray(columns);
-        return StringUtils.join(columns, "=?, ");
+    public String getColumnNameUpdate() {
+        List<String> ls = new ArrayList<>();
+        ls.add(COLUMNNAME_Value);
+        ls.add(COLUMNNAME_Name);
+        ls.add(COLUMNNAME_ServiceType);
+        ls.add(COLUMNNAME_UnitPrice);
+        ls.add(COLUMNNAME_IsActive);
+        return StringUtils.join(ls, "=?, ");
     }
-    
+
     @Override
     protected Object[] getValueUpdate() {
         List<Object> columns = getAllValues();
@@ -99,10 +94,10 @@ public class ServiceEntity extends BaseEntity {
         columns.toArray(obs);
         return obs;
     }
-    
+
     @Override
     protected String getColumnNameStr() {
-        return getHeaderNames();
+        return getQueryHeaderTable();
     }
 
     @Override
@@ -113,16 +108,19 @@ public class ServiceEntity extends BaseEntity {
         return obs;
     }
 
-    public static List<String> getColumnNames() {
-        List<String> columns = new ArrayList<>();
-        columns.add(Table_Name + "_ID");
-        columns.add(COLUMNNAME_Value);
-        columns.add(COLUMNNAME_Name);
-        columns.add(COLUMNNAME_ServiceType);
-        columns.add(COLUMNNAME_UnitPrice);
+    public static String[] getColumnNames() {
+        List<String> ls = new ArrayList<>();
+        ls.add(Table_Name + "_ID");
+        ls.add(COLUMNNAME_Value);
+        ls.add(COLUMNNAME_Name);
+        ls.add(COLUMNNAME_ServiceType);
+        ls.add(COLUMNNAME_UnitPrice);
+        ls.add(COLUMNNAME_IsActive);
+        String[] columns = new String[ls.size()];
+        ls.toArray(columns);
         return columns;
     }
-    
+
     private List<Object> getAllValues() {
         List<Object> values = new ArrayList<>();
         values.add(getId());
@@ -130,75 +128,91 @@ public class ServiceEntity extends BaseEntity {
         values.add(getName());
         values.add(getServiceType());
         values.add(getUnitPrice());
+        values.add(isActive());
         return values;
     }
 
-    public static String getHeaderNames() {
-        List<String> ls = getColumnNames();
-        String[] columns = new String[ls.size()];
-        ls.toArray(columns);
+    public static String getQueryHeaderTable() {
+        String[] columns = getColumnNames();
         return StringUtils.join(columns, ", ");
     }
-    
-    public boolean validateBeforeSave(boolean newRecord){
-         if(!validateFillFields()){
+
+    public boolean validateBeforeSave(boolean newRecord) {
+        if (!validateFillFields()) {
             return false;
         }
-         
-        if(!autoFillFieldFirstTime(newRecord)){
+
+        if (!autoFillFieldFirstTime(newRecord)) {
             return false;
         }
-       
-       return true; 
+
+        return true;
     }
-    
-    private boolean validateFillFields(){
+
+    private boolean validateFillFields() {
         StringBuilder err = new StringBuilder();
-        if(getName() == null || getName().isEmpty()){
+        if (getName() == null || getName().isEmpty()) {
             err.append(COLUMNNAME_Name);
         }
-        
-        if(getValue() == null || getValue().isEmpty()){
-            if(err.length() != 0)
+
+        if (getValue() == null || getValue().isEmpty()) {
+            if (err.length() != 0) {
                 err.append(", ");
+            }
             err.append(COLUMNNAME_Value);
         }
-        
-        if(getServiceType()== null || getServiceType().isEmpty()){
-            if(err.length() != 0)
+
+        if (getServiceType() == null || getServiceType().isEmpty()) {
+            if (err.length() != 0) {
                 err.append(", ");
+            }
             err.append(COLUMNNAME_ServiceType);
         }
-        
-        if(getUnitPrice()== null){
-             if(err.length() != 0)
+
+        if (getUnitPrice() == null) {
+            if (err.length() != 0) {
                 err.append(", ");
+            }
             err.append(COLUMNNAME_UnitPrice);
         }
-        
-        if(err.length() != 0){
+
+        if (err.length() != 0) {
             JOptionPane.showMessageDialog(null, "Please Input " + err.toString());
             return false;
         }
-        
+
+        return true;
+    }
+
+    private boolean autoFillFieldFirstTime(boolean newRecord) {
         return true;
     }
     
-    private boolean autoFillFieldFirstTime(boolean newRecord){
-        return true;
-    }
-    
-    
-    public static ResultSet getResultSet(){
-        String sql = "SELECT " + getHeaderNames() + " FROM " + Table_Name + " WHERE IsDeleted = 'N'";
+     public static ServiceEntity get(int HIS_Service_ID) {
+        String sql = "SELECT * FROM " + Table_Name + " WHERE " + COLUMNNAME_HIS_Service_ID + " = " + HIS_Service_ID;
+        PreparedStatement pstm = null;
         ResultSet rs = null;
+        ServiceEntity service = new ServiceEntity();
         try {
-            rs = DB.resultSet(sql);
-        } catch (SQLException ex) {
-            Logger.getLogger(ServiceEntity.class.getName()).log(Level.SEVERE, null, ex);
+            pstm = DB.prepareStatement(sql);
+            rs = pstm.executeQuery();
+            if (rs.next()) {
+                service.setId(rs.getInt(COLUMNNAME_HIS_Service_ID));
+                service.setName(rs.getString(COLUMNNAME_Name));
+                service.setValue(rs.getString(COLUMNNAME_Value));
+                service.setUnitPrice(rs.getBigDecimal(COLUMNNAME_UnitPrice));
+                service.setValue(rs.getString(COLUMNNAME_Value));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DB.close(rs, pstm);
+            pstm = null;
+            rs = null;
         }
-        
-        return rs;
+
+        return service;
     }
+    
 
 }

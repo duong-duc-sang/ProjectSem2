@@ -46,12 +46,14 @@ public class DB {
 
     public static Connection getConnection() {
         try {
-            return ds.getConnection();
+            if (conn == null) {
+                conn = ds.getConnection();
+                log.warning("Get Connection");
+            }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, e.getMessage());
-            return null;
+           log.log(Level.SEVERE, e.getMessage());
         }
-
+        return conn;
     }
 
     public static void setParameters(PreparedStatement stmt, Object[] params)
@@ -85,6 +87,28 @@ public class DB {
             pstmt.setTimestamp(index, Timestamp.valueOf((LocalDateTime) param));
         } else {
             throw new DBException("Unknown parameter type " + index + " - " + param);
+        }
+    }
+
+    public static void close() {
+
+        try {
+            if (conn != null) {
+                conn.close();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public static void close(Connection connection) {
+
+        try {
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DB.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -220,7 +244,6 @@ public class DB {
             conn.commit();
 
         } catch (SQLException e) {
-            e.printStackTrace();
             if (conn != null) {
 
                 try {
@@ -229,7 +252,7 @@ public class DB {
 
                 }
             }
-            //	throw new DBException(e);
+            throw new DBException(e);
         } finally {
             //  Always close cursor
             close(pstm);
@@ -240,15 +263,14 @@ public class DB {
 
     public static PreparedStatement prepareStatement(String sql) throws SQLException {
         conn = getConnection();
-        return conn.prepareStatement(sql);
-    }
-
-    public static ResultSet resultSet(String sql) throws SQLException {
         PreparedStatement pstm = null;
-        ResultSet rs = null;
-        pstm = prepareStatement(sql);
-        rs = pstm.executeQuery();
-        return rs;
+        int concurrency = ResultSet.CONCUR_READ_ONLY;
+        String upper = sql.toUpperCase();
+        if (upper.startsWith("UPDATE ") || upper.startsWith("DELETE ")) {
+            concurrency = ResultSet.CONCUR_UPDATABLE;
+        }
+        pstm = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, concurrency);
+        return pstm;
     }
 
     public static int getNextID(String tableName) {

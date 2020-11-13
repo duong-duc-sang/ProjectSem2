@@ -5,7 +5,7 @@
  */
 package com.aptech.view;
 
-import com.aptech.view.table.PatientTableModel;
+
 
 /**
  *
@@ -63,6 +63,11 @@ public class ViewMain extends javax.swing.JFrame {
 
         jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/user-add-icon.png"))); // NOI18N
         jButton5.setText("User");
+        jButton5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton5MouseClicked(evt);
+            }
+        });
 
         btnReception.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Button-Forward-icon.png"))); // NOI18N
         btnReception.setText("Reception");
@@ -116,20 +121,56 @@ public class ViewMain extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
-        PatientTableModel p = new PatientTableModel();
+        PatientMainView p = new PatientMainView();
         p.setVisible(true);
     }//GEN-LAST:event_jButton1MouseClicked
 
     private void btnReceptionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReceptionMouseClicked
-        PatientFrame p = new PatientFrame();
+        ReceptionPatientlView p = new ReceptionPatientlView();
         p.setVisible(true);
     }//GEN-LAST:event_btnReceptionMouseClicked
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
-       ServiceFrame f = new ServiceFrame();
+       ServiceView f = new ServiceView();
        f.setVisible(true);
     }//GEN-LAST:event_jButton2MouseClicked
 
+    private void jButton5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseClicked
+        UserView f = new UserView();
+        f.setVisible(true);
+    }//GEN-LAST:event_jButton5MouseClicked
+
+     public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(LoginFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(LoginFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(LoginFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(LoginFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new ViewMain().setVisible(true);
+            }
+        });
+    }
    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnReception;

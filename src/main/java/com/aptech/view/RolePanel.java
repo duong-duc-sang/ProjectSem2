@@ -7,6 +7,7 @@ package com.aptech.view;
 
 import com.aptech.service.Login;
 import com.aptech.utils.KeyNamePair;
+import java.awt.event.KeyEvent;
 import javax.swing.DefaultComboBoxModel;
 
 /**
@@ -98,10 +99,9 @@ public class RolePanel extends javax.swing.JFrame {
                         .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(roleComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(dCombobox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(rComboBox, 0, 226, Short.MAX_VALUE)))
+                    .addComponent(roleComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(dCombobox, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(rComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, 226, Short.MAX_VALUE))
                 .addContainerGap(178, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -141,9 +141,7 @@ public class RolePanel extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
-        ViewMain p = new ViewMain();
-        p.setVisible(true);
-        dispose();
+        loginOK();
     }//GEN-LAST:event_btnLoginActionPerformed
 
     /**
@@ -151,6 +149,12 @@ public class RolePanel extends javax.swing.JFrame {
      */
     
    
+    
+    private void loginOK(){
+       ViewMain p = new ViewMain();
+        p.setVisible(true);
+        dispose(); 
+    }
    
     public String getUerName() {
         return uerName;

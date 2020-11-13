@@ -31,6 +31,7 @@ public class PatientEntity extends BaseEntity implements I_Persistent {
     private String telNo;
     private int departmentId;
 
+    public static final String COLUMNNAME_HIS_PatientHistory_ID = "HIS_PatientHistory_ID";
     public PatientEntity(){
         super();
     }
@@ -188,7 +189,7 @@ public class PatientEntity extends BaseEntity implements I_Persistent {
         return values;
     }
     
-    public static String getHeaderNames(){
+    public static String getQueryHeaderTable(){
          String[] columns = columnNames();
         return StringUtils.join(columns, ", ");
     }
@@ -221,12 +222,38 @@ public class PatientEntity extends BaseEntity implements I_Persistent {
 
     @Override
     protected String getColumnNameUpdate() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+         List<String> columns = new ArrayList<>();
+        columns.add(COLUMNNAME_Name);
+        columns.add(COLUMNNAME_Birthday);
+        columns.add(COLUMNNAME_BirthdayStr);
+        columns.add(COLUMNNAME_Age);
+        columns.add(COLUMNNAME_Gender);
+        columns.add(COLUMNNAME_Address);
+        columns.add(COLUMNNAME_IDNo);
+        columns.add(COLUMNNAME_TelNo);
+        columns.add(COLUMNNAME_Department_ID);
+        columns.add(COLUMNNAME_TimeGoIn);
+        columns.add(COLUMNNAME_TimeGoOut);
+        return StringUtils.join(columns, "=?, ");
     }
 
     @Override
     protected Object[] getValueUpdate() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+         List<Object> columns = new ArrayList<>();
+        columns.add(getName());
+        columns.add(getBirthday());
+        columns.add(getBirthdayStr());
+        columns.add(getAge());
+        columns.add(getGender());
+        columns.add(getAddress());
+        columns.add(getIdNo());
+        columns.add(getTelNo());
+        columns.add(getDepartmentId());
+        columns.add(getTimeGoIn());
+        columns.add(getTimeGoOut());
+        Object[] obs = new Object[columns.size()];
+        columns.toArray(obs);
+        return obs;
     }
 
 

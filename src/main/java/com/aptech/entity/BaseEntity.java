@@ -35,7 +35,8 @@ public abstract class BaseEntity {
         this.id = id;
     }
 
-    public String getIsActive() {
+    public static final String COLUMNNAME_IsActive = "IsActive";
+    public String isActive() {
         return isActive;
     }
 
@@ -43,7 +44,7 @@ public abstract class BaseEntity {
         this.isActive = isActive;
     }
 
-    public String getIsDeleted() {
+    public String isDeleted() {
         return isDeleted;
     }
 
@@ -152,10 +153,16 @@ public abstract class BaseEntity {
     }
 
     public boolean delete() {
+        String sql = "UPDATE " + getTableName() + " SET IsDeleted = 'Y' WHERE " + getTableName() + "_ID = " + getId();
+        int no = DB.executeUpdate(sql);
+        if (no != 1) {
+            return false;
+        }
         return true;
     }
     
     public boolean save(){
+        log.warning("Start SAVE Entity");
         if(isNew()){
             setId(getNextId());
             if(!create()){
@@ -166,12 +173,14 @@ public abstract class BaseEntity {
                 return false;
             }
         }
+        log.warning("End SAVE Entity");
         return true;
     }
     
     public boolean isNew(){
         return saveNew_getID() == 0;
     }
+    
 
     protected abstract String getColumnNameStr();
 
@@ -180,4 +189,7 @@ public abstract class BaseEntity {
     protected  abstract String getColumnNameUpdate();
     
     protected  abstract Object[] getValueUpdate();
+   
+     
+    
 }

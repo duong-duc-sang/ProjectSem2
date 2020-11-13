@@ -44,11 +44,8 @@
           <Color blue="f0" green="f1" red="df" type="rgb"/>
         </Property>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-            <TitledBorder title="Login">
-              <Font PropertyName="font" name="Dialog" size="14" style="0"/>
-              <Color PropertyName="color" blue="26" green="7" red="f1" type="rgb"/>
-            </TitledBorder>
+          <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+            <EmptyBorder/>
           </Border>
         </Property>
       </Properties>
@@ -76,7 +73,7 @@
                           <Component id="btnCancel" min="-2" pref="107" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <EmptySpace pref="185" max="32767" attributes="0"/>
+                  <EmptySpace pref="193" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -98,7 +95,7 @@
                       <Component id="btnLogin" alignment="3" max="-2" attributes="0"/>
                       <Component id="btnCancel" alignment="3" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="152" max="32767" attributes="0"/>
+                  <EmptySpace pref="174" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>

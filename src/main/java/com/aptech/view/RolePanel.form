@@ -62,11 +62,9 @@
                           <EmptySpace pref="40" max="32767" attributes="0"/>
                           <Component id="jButton2" min="-2" pref="93" max="-2" attributes="0"/>
                       </Group>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="roleComboBox" max="32767" attributes="0"/>
-                          <Component id="dCombobox" alignment="0" max="32767" attributes="0"/>
-                          <Component id="rComboBox" alignment="0" pref="226" max="32767" attributes="0"/>
-                      </Group>
+                      <Component id="roleComboBox" alignment="0" max="32767" attributes="0"/>
+                      <Component id="dCombobox" alignment="0" max="32767" attributes="0"/>
+                      <Component id="rComboBox" alignment="0" pref="226" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace pref="178" max="32767" attributes="0"/>
               </Group>
