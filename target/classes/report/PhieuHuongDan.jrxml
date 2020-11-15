@@ -3,7 +3,7 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.encoding" value="UTF-8"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="47"/>
 	<property name="net.sf.jasperreports.export.pdf.javascript" value="this.print({bUI: true,bSilent: true,bShrinkToFit: false});"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="97"/>
@@ -393,7 +393,7 @@ Người bệnh khám theo thứ tự bàn 1 -> bàn 2.
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Printor.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement key="" x="0" y="0" width="30" height="17" isRemoveLineWhenBlank="true" uuid="e34d5531-c6b9-4e0d-aba0-380c34db6940">
+				<reportElement key="" x="0" y="0" width="30" height="17" uuid="e34d5531-c6b9-4e0d-aba0-380c34db6940">
 					<printWhenExpression><![CDATA[]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="3">

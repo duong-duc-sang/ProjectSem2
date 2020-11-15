@@ -34,7 +34,7 @@ public class ReportUtil {
 
         JasperReport jasperReport;
         try {
-            FileInputStream inp = new FileInputStream("report/PhieuHuongDan.jrxml");
+            FileInputStream inp = new FileInputStream("/report/PhieuHuongDan.jasper");
             jasperReport = JasperCompileManager.compileReport(inp);
             Map<String, Object> parameters = new HashMap<String, Object>();
             conn = DB.getConnection();

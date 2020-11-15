@@ -10,5 +10,5 @@ package com.aptech.utils;
  * @author ducsang
  */
 public class Const {
-    public static final int NUMBER_ROW =20;
+    public static final int NUMBER_ROW =10;
 }

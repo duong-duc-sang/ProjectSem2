@@ -11,7 +11,6 @@ import java.util.Properties;
 import java.util.logging.Logger;
 import org.apache.commons.lang.StringUtils;
 
-
 /**
  *
  * @author ducsang
@@ -36,6 +35,7 @@ public abstract class BaseEntity {
     }
 
     public static final String COLUMNNAME_IsActive = "IsActive";
+
     public String isActive() {
         return isActive;
     }
@@ -52,6 +52,8 @@ public abstract class BaseEntity {
         this.isDeleted = isDeleted;
     }
 
+    public static final String COLUMNNAME_Created = "Created";
+
     public LocalDateTime getCreated() {
         return created;
     }
@@ -59,6 +61,8 @@ public abstract class BaseEntity {
     public final void setCreated() {
         this.created = LocalDateTime.now();
     }
+
+    public static final String COLUMNNAME_CreatedBy = "CreatedBy";
 
     public int getCreatedBy() {
         return createdBy;
@@ -68,6 +72,8 @@ public abstract class BaseEntity {
         this.createdBy = createdBy;
     }
 
+    public static final String COLUMNNAME_Updated = "Updated";
+
     public LocalDateTime getUpdated() {
         return updated;
     }
@@ -76,12 +82,18 @@ public abstract class BaseEntity {
         this.updated = LocalDateTime.now();;
     }
 
+    public static final String COLUMNNAME_UpdatedBy = "UpdatedBy";
+
     public int getUpdatedBy() {
         return updatedBy;
     }
 
     public final void setUpdatedBy(int updatedBy) {
         this.updatedBy = updatedBy;
+    }
+    
+    public int getAP_User_ID(){
+        return getContextAsInt(System.getProperties(), "#AP_User_ID");
     }
 
     public static int getContextAsInt(Properties ctx, String context) {
@@ -160,36 +172,33 @@ public abstract class BaseEntity {
         }
         return true;
     }
-    
-    public boolean save(){
+
+    public boolean save() {
         log.warning("Start SAVE Entity");
-        if(isNew()){
+        if (isNew()) {
             setId(getNextId());
-            if(!create()){
+            if (!create()) {
                 return false;
             }
-        }else{
-            if(!update()){
+        } else {
+            if (!update()) {
                 return false;
             }
         }
         log.warning("End SAVE Entity");
         return true;
     }
-    
-    public boolean isNew(){
+
+    public boolean isNew() {
         return saveNew_getID() == 0;
     }
-    
 
     protected abstract String getColumnNameStr();
 
     protected abstract Object[] getValueColumns();
-    
-    protected  abstract String getColumnNameUpdate();
-    
-    protected  abstract Object[] getValueUpdate();
-   
-     
-    
+
+    protected abstract String getColumnNameUpdate();
+
+    protected abstract Object[] getValueUpdate();
+
 }

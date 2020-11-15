@@ -14,14 +14,14 @@ import javax.swing.DefaultComboBoxModel;
  *
  * @author ducsang
  */
-public class RolePanel extends javax.swing.JFrame {
+public class ChoiceRoleView extends javax.swing.JFrame {
 
     /**
-     * Creates new form RolePanel
+     * Creates new form ChoiceRoleView
      */
     
     private String uerName;
-    public RolePanel(String userName) {
+    public ChoiceRoleView(String userName) {
         this.uerName = userName;
         initComponents();
     }

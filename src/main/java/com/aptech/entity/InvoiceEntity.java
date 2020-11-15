@@ -126,6 +126,7 @@ public class InvoiceEntity extends BaseEntity {
         columns.add(COLUMNNAME_PayTime);
         columns.add(COLUMNNAME_Cashier_User_ID);
         columns.add(COLUMNNAME_Status);
+        columns.add(COLUMNNAME_CreatedBy);
         String[] values = new String[columns.size()];
         columns.toArray(values);
         return values;
@@ -148,6 +149,7 @@ public class InvoiceEntity extends BaseEntity {
         ls.add(getPayTime());
         ls.add(getCashier_User_Id());
         ls.add(getStatus());
+        ls.add(getAP_User_ID());
         Object[] obs = new Object[ls.size()];
         ls.toArray(obs);
         return obs;
@@ -162,6 +164,8 @@ public class InvoiceEntity extends BaseEntity {
         ls.add(COLUMNNAME_Cashier_User_ID);
         ls.add(COLUMNNAME_Status);
         ls.add(COLUMNNAME_IsPaid);
+        ls.add(COLUMNNAME_Updated);
+        ls.add(COLUMNNAME_UpdatedBy);
         return StringUtils.join(ls, "=?, ");
     }
 
@@ -174,6 +178,8 @@ public class InvoiceEntity extends BaseEntity {
         ls.add(getCashier_User_Id());
         ls.add(getStatus());
         ls.add(getIsPaid());
+        ls.add(LocalDateTime.now());
+        ls.add(getAP_User_ID());
         Object[] obs = new Object[ls.size()];
         ls.toArray(obs);
         return obs;
@@ -280,13 +286,14 @@ public class InvoiceEntity extends BaseEntity {
         if("Y".equals(getIsPaid())){
             return false;
         }
+        setCashier_User_Id(getAP_User_ID());
         setIsPaid("Y");
         setPayTime(LocalDateTime.now());
         if(!save()){
             return false;
         }
-        String sql = "Update HIS_Patient_Service SET IsPaid = 'Y' WHERE IsDeleted = 'N' AND HIS_Invoice_ID = ? AND HIS_PatientHistory_ID = ?";
-        DB.executeUpdateEx(sql, getId(), getPatientId());
+        String sql = "Update HIS_Patient_Service SET IsPaid = 'Y', UpdatedBy = ?, Updated = ? WHERE IsDeleted = 'N' AND HIS_Invoice_ID = ? AND HIS_PatientHistory_ID = ?";
+        DB.executeUpdateEx(sql, getContextAsInt(System.getProperties(), "#AP_User_ID"), TimeUtil.getNow(), getId(), getPatientId());
         return true;
     }
 

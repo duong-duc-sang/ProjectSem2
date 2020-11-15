@@ -234,6 +234,8 @@ public class PatientEntity extends BaseEntity implements I_Persistent {
         columns.add(COLUMNNAME_Department_ID);
         columns.add(COLUMNNAME_TimeGoIn);
         columns.add(COLUMNNAME_TimeGoOut);
+        columns.add(COLUMNNAME_Updated);
+        columns.add(COLUMNNAME_UpdatedBy);
         return StringUtils.join(columns, "=?, ");
     }
 
@@ -251,6 +253,8 @@ public class PatientEntity extends BaseEntity implements I_Persistent {
         columns.add(getDepartmentId());
         columns.add(getTimeGoIn());
         columns.add(getTimeGoOut());
+        columns.add(LocalDateTime.now());
+        columns.add(getContextAsInt(System.getProperties(), "#AP_User_ID"));
         Object[] obs = new Object[columns.size()];
         columns.toArray(obs);
         return obs;
