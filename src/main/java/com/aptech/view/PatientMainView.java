@@ -9,6 +9,7 @@ import com.aptech.db.DB;
 import com.aptech.entity.PatientEntity;
 import com.aptech.entity.PatientServiceEntity;
 import com.aptech.utils.Const;
+import com.aptech.view.table.NumberTableCellRender;
 import com.aptech.view.table.PatientModel;
 import com.aptech.view.table.PatientServiceModel;
 import java.awt.Color;
@@ -56,6 +57,7 @@ public class PatientMainView extends javax.swing.JFrame {
         } else {
             totalPage = totalRow / numRows + 1;
         }
+        jLableTotal.setText(totalRow +" rows");
 
         loadPatientData(1);
         jTablePatient.setRowSelectionInterval(0, 0);
@@ -68,6 +70,10 @@ public class PatientMainView extends javax.swing.JFrame {
         header.setBackground(Color.black);
         header.setForeground(Color.BLUE);
         loadServiceData();
+        int column = jTableService.getColumnCount();
+        for (int i = 0; i < column; i++) {
+            jTableService.getColumnModel().getColumn(i).setCellRenderer(new NumberTableCellRender());
+        }
     }
 
     private void loadServiceData() {
@@ -186,10 +192,11 @@ public class PatientMainView extends javax.swing.JFrame {
         jLabelPage = new javax.swing.JLabel();
         btnNext = new javax.swing.JButton();
         btnLast = new javax.swing.JButton();
+        jLableTotal = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTableService = new javax.swing.JTable();
         jPanelService = new javax.swing.JPanel();
-        btnSave = new javax.swing.JButton();
+        btnDetail = new javax.swing.JButton();
         btnNew = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
 
@@ -281,7 +288,8 @@ public class PatientMainView extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jLableTotal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(btnFirst)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnPrev, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -298,10 +306,17 @@ public class PatientMainView extends javax.swing.JFrame {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabelPage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(btnPrev, javax.swing.GroupLayout.Alignment.TRAILING)
-            .addComponent(btnNext)
-            .addComponent(btnLast)
-            .addComponent(btnFirst, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnPrev, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnFirst, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLableTotal, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnNext)
+                    .addComponent(btnLast))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnFirst, btnLast, btnNext, btnPrev});
@@ -321,12 +336,12 @@ public class PatientMainView extends javax.swing.JFrame {
         jTableService.setSelectionForeground(new java.awt.Color(194, 242, 242));
         jScrollPane2.setViewportView(jTableService);
 
-        btnSave.setBackground(new java.awt.Color(243, 242, 43));
-        btnSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/page-search-icon.png"))); // NOI18N
-        btnSave.setText("Detail");
-        btnSave.addMouseListener(new java.awt.event.MouseAdapter() {
+        btnDetail.setBackground(new java.awt.Color(243, 242, 43));
+        btnDetail.setIcon(new javax.swing.ImageIcon(getClass().getResource("/page-search-icon.png"))); // NOI18N
+        btnDetail.setText("Detail");
+        btnDetail.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btnSaveMouseClicked(evt);
+                btnDetailMouseClicked(evt);
             }
         });
 
@@ -350,7 +365,7 @@ public class PatientMainView extends javax.swing.JFrame {
             .addGroup(jPanelServiceLayout.createSequentialGroup()
                 .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(33, 33, 33)
-                .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnDetail, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
                 .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -360,12 +375,12 @@ public class PatientMainView extends javax.swing.JFrame {
                 .addGap(134, 134, 134)
                 .addGroup(jPanelServiceLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnNew)
-                    .addComponent(btnSave)
+                    .addComponent(btnDetail)
                     .addComponent(btnDelete))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanelServiceLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnDelete, btnNew, btnSave});
+        jPanelServiceLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnDelete, btnDetail, btnNew});
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -439,7 +454,7 @@ public class PatientMainView extends javax.swing.JFrame {
         f.setVisible(true);
     }//GEN-LAST:event_btnNewMouseClicked
 
-    private void btnSaveMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSaveMouseClicked
+    private void btnDetailMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDetailMouseClicked
         int row = jTablePatient.getSelectedRow();
         int column = jTablePatient.getColumnCount();
         if (row < 0) {
@@ -461,7 +476,7 @@ public class PatientMainView extends javax.swing.JFrame {
         }
         PatientServiceView f = new PatientServiceView(patientId);
         f.setVisible(true);
-    }//GEN-LAST:event_btnSaveMouseClicked
+    }//GEN-LAST:event_btnDetailMouseClicked
 
     private void showMsg(String msg) {
         JOptionPane.showMessageDialog(this, msg);
@@ -505,13 +520,14 @@ public class PatientMainView extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnDetail;
     private javax.swing.JButton btnFirst;
     private javax.swing.JButton btnLast;
     private javax.swing.JButton btnNew;
     private javax.swing.JButton btnNext;
     private javax.swing.JButton btnPrev;
-    private javax.swing.JButton btnSave;
     private javax.swing.JLabel jLabelPage;
+    private javax.swing.JLabel jLableTotal;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanelService;
     private javax.swing.JScrollPane jScrollPane1;

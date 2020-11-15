@@ -244,6 +244,7 @@ public class DB {
             conn.commit();
 
         } catch (SQLException e) {
+            log.warning(e.getMessage());
             if (conn != null) {
 
                 try {

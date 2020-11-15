@@ -5,15 +5,25 @@
  */
 package com.aptech.view;
 
+import com.aptech.db.DB;
 import com.aptech.entity.MHISPatientHistory;
 import com.aptech.utils.ReportUtil;
 import com.aptech.utils.Util;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -133,7 +143,7 @@ public class ReceptionPatientlView extends javax.swing.JFrame {
 
         txtPatientDocument.setEditable(false);
 
-        btnPrint.setBackground(new java.awt.Color(25, 48, 241));
+        btnPrint.setBackground(new java.awt.Color(204, 234, 1));
         btnPrint.setForeground(new java.awt.Color(237, 120, 159));
         btnPrint.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Devices-printer-icon.png"))); // NOI18N
         btnPrint.setText("Print");
@@ -305,10 +315,16 @@ public class ReceptionPatientlView extends javax.swing.JFrame {
     private void btnPrintMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPrintMouseClicked
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("HIS_Patient_Service_ID", 1000);
-        try {
-            ReportUtil.generateReport(parameters);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(ReceptionPatientlView.class.getName()).log(Level.SEVERE, null, ex);
+         JasperReport jasperReport;
+         Connection conn = null;
+         try {
+            InputStream inp = getClass().getResourceAsStream("/report/PhieuHuongDan.jrxml");
+            jasperReport = JasperCompileManager.compileReport(inp);
+            conn = DB.getConnection();
+            JasperPrint jp = JasperFillManager.fillReport(jasperReport, parameters, conn);
+            JasperViewer.viewReport(jp);
+        } catch (JRException ex) {
+           ex.printStackTrace();
         }
     }//GEN-LAST:event_btnPrintMouseClicked
 

@@ -20,6 +20,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.view.JasperViewer;
 
+
 /**
  *
  * @author ducsang
@@ -33,7 +34,7 @@ public class ReportUtil {
 
         JasperReport jasperReport;
         try {
-            FileInputStream inp = new FileInputStream("/home/ducsang/Aptech/ProjectSem2/src/main/java/com/aptech/design/PhieuHuongDan.jrxml");
+            FileInputStream inp = new FileInputStream("report/PhieuHuongDan.jrxml");
             jasperReport = JasperCompileManager.compileReport(inp);
             Map<String, Object> parameters = new HashMap<String, Object>();
             conn = DB.getConnection();

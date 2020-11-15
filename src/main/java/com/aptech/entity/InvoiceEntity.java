@@ -5,9 +5,16 @@
  */
 package com.aptech.entity;
 
+import com.aptech.db.DB;
+import com.aptech.utils.TimeUtil;
 import java.math.BigDecimal;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -17,15 +24,15 @@ import org.apache.commons.lang.StringUtils;
 public class InvoiceEntity extends BaseEntity {
 
     private int patientId;
-    private String patientName;
-    private String patientValue;
-    private String patientDocument;
     private BigDecimal totalPrice;
     private BigDecimal amount;
     private String isPaid;
+    private LocalDateTime payTime;
+    private int cashier_User_Id;
     private String status;
 
     public static final String Table_Name = "HIS_Invoice";
+    public static final String COLUMNNAME_HIS_Invoice_ID = "HIS_Invoice_ID";
 
     public InvoiceEntity() {
     }
@@ -37,36 +44,6 @@ public class InvoiceEntity extends BaseEntity {
 
     public void setPatientId(int patientId) {
         this.patientId = patientId;
-    }
-
-    public static String COLUMNNAME_PatientName = "PatientName";
-
-    public String getPatientName() {
-        return patientName;
-    }
-
-    public void setPatientName(String patientName) {
-        this.patientName = patientName;
-    }
-
-    public static String COLUMNNAME_PatientValue = "PatientValue";
-
-    public String getPatientValue() {
-        return patientValue;
-    }
-
-    public void setPatientValue(String patientValue) {
-        this.patientValue = patientValue;
-    }
-
-    public static String COLUMNNAME_PatientDocument = "HIS_PatientDocument";
-
-    public String getPatientDocument() {
-        return patientDocument;
-    }
-
-    public void setPatientDocument(String patientDocument) {
-        this.patientDocument = patientDocument;
     }
 
     public static String COLUMNNAME_TotalPrice = "TotalPrice";
@@ -109,29 +86,49 @@ public class InvoiceEntity extends BaseEntity {
         this.status = status;
     }
 
+    public static String COLUMNNAME_PayTime = "PayTime";
+
+    public LocalDateTime getPayTime() {
+        return payTime;
+    }
+
+    public void setPayTime(LocalDateTime payTime) {
+        this.payTime = payTime;
+    }
+
+    public static String COLUMNNAME_Cashier_User_ID = "Cashier_User_ID";
+
+    public int getCashier_User_Id() {
+        return cashier_User_Id;
+    }
+
+    public void setCashier_User_Id(int cashier_User_Id) {
+        this.cashier_User_Id = cashier_User_Id;
+    }
+
     @Override
     public String getTableName() {
         return Table_Name;
+    }
+
+    public static String getQueryHeaderTable() {
+        String[] columns = columnNames();
+        return StringUtils.join(columns, ", ");
     }
 
     public static String[] columnNames() {
         List<String> columns = new ArrayList<>();
         columns.add(Table_Name + "_ID");
         columns.add(COLUMNNAME_HIS_PatientHistory_ID);
-        columns.add(COLUMNNAME_PatientName);
-        columns.add(COLUMNNAME_PatientDocument);
-        columns.add(COLUMNNAME_PatientValue);
         columns.add(COLUMNNAME_TotalPrice);
         columns.add(COLUMNNAME_Amount);
         columns.add(COLUMNNAME_IsPaid);
+        columns.add(COLUMNNAME_PayTime);
+        columns.add(COLUMNNAME_Cashier_User_ID);
+        columns.add(COLUMNNAME_Status);
         String[] values = new String[columns.size()];
         columns.toArray(values);
         return values;
-    }
-    
-    public static String getHeaderNames() {
-        String[] columns = columnNames();
-        return StringUtils.join(columns, ", ");
     }
 
     @Override
@@ -139,19 +136,18 @@ public class InvoiceEntity extends BaseEntity {
         String[] columns = columnNames();
         return StringUtils.join(columns, ", ");
     }
-    
 
     @Override
     protected Object[] getValueColumns() {
         List<Object> ls = new ArrayList<>();
         ls.add(getId());
         ls.add(getPatientId());
-        ls.add(getPatientName());
-        ls.add(getPatientDocument());
-        ls.add(getPatientValue());
         ls.add(getTotalPrice());
         ls.add(getAmount());
         ls.add(getIsPaid());
+        ls.add(getPayTime());
+        ls.add(getCashier_User_Id());
+        ls.add(getStatus());
         Object[] obs = new Object[ls.size()];
         ls.toArray(obs);
         return obs;
@@ -159,12 +155,139 @@ public class InvoiceEntity extends BaseEntity {
 
     @Override
     protected String getColumnNameUpdate() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<String> ls = new ArrayList<>();
+        ls.add(COLUMNNAME_TotalPrice);
+        ls.add(COLUMNNAME_Amount);
+        ls.add(COLUMNNAME_PayTime);
+        ls.add(COLUMNNAME_Cashier_User_ID);
+        ls.add(COLUMNNAME_Status);
+        ls.add(COLUMNNAME_IsPaid);
+        return StringUtils.join(ls, "=?, ");
     }
 
     @Override
     protected Object[] getValueUpdate() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Object> ls = new ArrayList<>();
+        ls.add(getTotalPrice());
+        ls.add(getAmount());
+        ls.add(getPayTime());
+        ls.add(getCashier_User_Id());
+        ls.add(getStatus());
+        ls.add(getIsPaid());
+        Object[] obs = new Object[ls.size()];
+        ls.toArray(obs);
+        return obs;
+    }
+
+    public static InvoiceEntity getByPatient(int HIS_PatientHistory_ID, boolean isPaid) {
+        String sql = "SELECT * FROM " + Table_Name + " WHERE IsDeleted = 'N' AND IsPaid = ? AND " + COLUMNNAME_HIS_PatientHistory_ID + " = " + HIS_PatientHistory_ID;
+        
+        PreparedStatement pstm = null;
+        ResultSet rs = null;
+        InvoiceEntity iv = new InvoiceEntity();
+        try {
+            pstm = DB.prepareStatement(sql);
+            pstm.setString(1, isPaid ? "Y" : "N");
+            rs = pstm.executeQuery();
+            if (rs.next()) {
+                iv.setId(rs.getInt(COLUMNNAME_HIS_Invoice_ID));
+                iv.setPatientId(rs.getInt(COLUMNNAME_HIS_PatientHistory_ID));
+                iv.setTotalPrice(rs.getBigDecimal(COLUMNNAME_TotalPrice));
+                iv.setAmount(rs.getBigDecimal(COLUMNNAME_Amount));
+                iv.setIsPaid(rs.getString(COLUMNNAME_IsPaid) == null ? "N" : rs.getString(COLUMNNAME_IsPaid));
+                if(rs.getTimestamp(COLUMNNAME_PayTime) != null){
+                     iv.setPayTime(rs.getTimestamp(COLUMNNAME_PayTime).toLocalDateTime()); 
+                }
+                iv.setCashier_User_Id(rs.getInt(COLUMNNAME_Cashier_User_ID));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DB.close(rs, pstm);
+            pstm = null;
+            rs = null;
+        }
+
+        return iv;
+    }
+    
+    public static InvoiceEntity get(int HIS_Invoice_ID) {
+        String sql = "SELECT * FROM " + Table_Name + " WHERE IsDeleted = 'N' AND " + COLUMNNAME_HIS_Invoice_ID + " = " + HIS_Invoice_ID;
+        
+        PreparedStatement pstm = null;
+        ResultSet rs = null;
+        InvoiceEntity iv = new InvoiceEntity();
+        try {
+            pstm = DB.prepareStatement(sql);
+            rs = pstm.executeQuery();
+            if (rs.next()) {
+                iv.setId(rs.getInt(COLUMNNAME_HIS_Invoice_ID));
+                iv.setPatientId(rs.getInt(COLUMNNAME_HIS_PatientHistory_ID));
+                iv.setTotalPrice(rs.getBigDecimal(COLUMNNAME_TotalPrice));
+                iv.setAmount(rs.getBigDecimal(COLUMNNAME_Amount));
+                iv.setIsPaid(rs.getString(COLUMNNAME_IsPaid));
+                if(rs.getTimestamp(COLUMNNAME_PayTime) != null){
+                     iv.setPayTime(rs.getTimestamp(COLUMNNAME_PayTime).toLocalDateTime()); 
+                }
+                iv.setCashier_User_Id(rs.getInt(COLUMNNAME_Cashier_User_ID));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DB.close(rs, pstm);
+            pstm = null;
+            rs = null;
+        }
+
+        return iv;
+    }
+    
+    public boolean recalculate(){
+        BigDecimal totalPrice = BigDecimal.ZERO;
+        BigDecimal amount  = BigDecimal.ZERO;
+        StringBuilder sql  = new StringBuilder("SELECT SUM(COALESCE(TotalPrice, 0)) as TotalPrice, SUM(COALESCE(Amount, 0)) as Amount FROM ")
+                .append(PatientServiceEntity.Table_Name).append(" WHERE IsDeleted = 'N' AND IsActive = 'Y' AND HIS_Invoice_ID = ? AND HIS_PatientHistory_ID = ?");
+        
+        PreparedStatement pstm = null;
+        ResultSet rs = null;
+        try {
+            pstm = DB.prepareStatement(sql.toString());
+            pstm.setInt(1, getId());
+            pstm.setInt(2, getPatientId());
+            rs = pstm.executeQuery();
+            if (rs.next()) {
+                totalPrice = rs.getBigDecimal("TotalPrice");
+                amount = rs.getBigDecimal("Amount");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DB.close(rs, pstm);
+            pstm = null;
+            rs = null;
+        }
+        totalPrice = totalPrice == null ? BigDecimal.ZERO : totalPrice;
+        amount = amount == null ? BigDecimal.ZERO : amount;
+        setAmount(amount);
+        setTotalPrice(totalPrice);
+        if(!save()){
+            return false;
+        }
+        return true;
+    }
+    
+    public boolean doPayment(){
+        if("Y".equals(getIsPaid())){
+            return false;
+        }
+        setIsPaid("Y");
+        setPayTime(LocalDateTime.now());
+        if(!save()){
+            return false;
+        }
+        String sql = "Update HIS_Patient_Service SET IsPaid = 'Y' WHERE IsDeleted = 'N' AND HIS_Invoice_ID = ? AND HIS_PatientHistory_ID = ?";
+        DB.executeUpdateEx(sql, getId(), getPatientId());
+        return true;
     }
 
 }

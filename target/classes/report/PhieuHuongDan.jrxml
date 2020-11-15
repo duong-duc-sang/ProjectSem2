@@ -27,12 +27,11 @@
 	<queryString>
 		<![CDATA[Select
  ph.RegDate,
-       ph.HIS_PatientDocument,
+       ph.PatientDocument,
        ph.VALUE as PatientValue,
        ph.NAME as PatientName,
-       ph.his_department_id,
        hc.Amount,
-       HIS_Gender,
+       ph.Gender,
        ph.AGE,
        hc.sequenceno                                             as SOTHUTU,
        hs.NAME                                                      as ServiceName,
@@ -53,12 +52,11 @@ where ph.HIS_PATIENTHISTORY_ID = $P{HIS_PATIENTHISTORY_ID}
     and HIS_Patient_Service_ID=$P{HIS_Patient_Service_ID}]]>
 	</queryString>
 	<field name="REGDATE" class="java.sql.Timestamp"/>
-	<field name="HIS_PATIENTDOCUMENT" class="java.lang.String"/>
+	<field name="PATIENTDOCUMENT" class="java.lang.String"/>
 	<field name="PATIENTVALUE" class="java.lang.String"/>
 	<field name="PATIENTNAME" class="java.lang.String"/>
-	<field name="HIS_DEPARTMENT_ID" class="java.math.BigDecimal"/>
 	<field name="AMOUNT" class="java.math.BigDecimal"/>
-	<field name="HIS_GENDER" class="java.lang.String"/>
+	<field name="GENDER" class="java.lang.String"/>
 	<field name="AGE" class="java.math.BigDecimal"/>
 	<field name="SOTHUTU" class="java.math.BigDecimal"/>
 	<field name="SERVICENAME" class="java.lang.String"/>
@@ -128,7 +126,7 @@ where ph.HIS_PATIENTHISTORY_ID = $P{HIS_PATIENTHISTORY_ID}
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Times New Roman" size="11" pdfEncoding="Identity-H"/>
 				</textElement>
-				<textFieldExpression><![CDATA["F".equals($F{HIS_GENDER}) ? "Nữ" :"Nam"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Female".equals($F{GENDER}) ? "Nữ" :"Nam"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="44" y="111" width="342" height="16" uuid="14e5d271-be31-42d0-84b2-0e3d51807033"/>
@@ -219,7 +217,7 @@ where ph.HIS_PATIENTHISTORY_ID = $P{HIS_PATIENTHISTORY_ID}
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Times New Roman" size="11" pdfEncoding="Identity-H"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{HIS_PATIENTDOCUMENT}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{PATIENTDOCUMENT}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement x="185" y="95" width="77" height="16" uuid="7a1c4011-0826-42da-9a5c-42b839e7660b"/>

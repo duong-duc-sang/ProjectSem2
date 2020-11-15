@@ -60,6 +60,11 @@ public class ViewMain extends javax.swing.JFrame {
 
         jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/folder-invoices-icon.png"))); // NOI18N
         jButton4.setText("Invoices");
+        jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton4MouseClicked(evt);
+            }
+        });
 
         jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/user-add-icon.png"))); // NOI18N
         jButton5.setText("User");
@@ -139,6 +144,12 @@ public class ViewMain extends javax.swing.JFrame {
         UserView f = new UserView();
         f.setVisible(true);
     }//GEN-LAST:event_jButton5MouseClicked
+
+    private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
+        InvoiceView f = new InvoiceView();
+        f.setVisible(true);
+        f.pack();
+    }//GEN-LAST:event_jButton4MouseClicked
 
      public static void main(String args[]) {
         /* Set the Nimbus look and feel */

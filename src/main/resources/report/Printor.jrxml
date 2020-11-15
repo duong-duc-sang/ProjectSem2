@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Printor" pageWidth="160" pageHeight="25" columnWidth="160" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="c9c9beff-16e8-4081-b08a-a1c22663d124">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="AD_User_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select fullname from ap_user au
+ where ap_user_id = $P{AD_User_ID}]]>
+	</queryString>
+	<field name="FULLNAME" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="14" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement key="printor" positionType="Float" x="0" y="0" width="160" height="14" forecolor="#000000" uuid="87c371a5-6a99-480a-baf6-f421e9ca1e3c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Times New Roman" size="12" isBold="false" pdfFontName="Arial" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FULLNAME}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+</jasperReport>

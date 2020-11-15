@@ -273,6 +273,10 @@ public class PatientServiceEntity extends BaseEntity {
     }
 
     private boolean autoFillFieldFirstTime(boolean newRecord) {
+        if(!initInvoice()){
+            return false;
+        }
+        
         if(!calculateAmount()){
             return false;
         }
@@ -289,6 +293,24 @@ public class PatientServiceEntity extends BaseEntity {
         amount = getQuantity().multiply(s.getUnitPrice());
         setAmount(amount);
         setTotalPrice(amount);
+        return true;
+    }
+    
+    private boolean initInvoice(){
+        if(getInvoiceId() > 0){
+            return true;
+        }
+        InvoiceEntity iv = InvoiceEntity.getByPatient(getPatientId(), false);
+        if(iv == null || iv.getId() <= 0){
+            iv = new InvoiceEntity();
+            iv.setPatientId(getPatientId());
+            iv.setIsPaid("N");
+            if(!iv.save()){
+                return false;
+            }
+        }
+        
+        setInvoiceId(iv.getId());
         return true;
     }
 

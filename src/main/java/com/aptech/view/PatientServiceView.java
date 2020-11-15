@@ -6,6 +6,7 @@
 package com.aptech.view;
 
 import com.aptech.db.DB;
+import com.aptech.entity.InvoiceEntity;
 import com.aptech.entity.MHISPatientHistory;
 import com.aptech.entity.PatientServiceEntity;
 import com.aptech.entity.RoomEntity;
@@ -103,7 +104,7 @@ public class PatientServiceView extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         txtBirthday = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
-        txtGender = new javax.swing.JTextPane();
+        txtGender = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -159,7 +160,6 @@ public class PatientServiceView extends javax.swing.JFrame {
 
         txtGender.setEditable(false);
         txtGender.setForeground(new java.awt.Color(255, 0, 0));
-        txtGender.setEnabled(false);
 
         javax.swing.GroupLayout jPanelLayout = new javax.swing.GroupLayout(jPanel);
         jPanel.setLayout(jPanelLayout);
@@ -181,25 +181,24 @@ public class PatientServiceView extends javax.swing.JFrame {
                 .addGap(52, 52, 52)
                 .addComponent(jLabel10)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtGender, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(62, Short.MAX_VALUE))
+                .addComponent(txtGender, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanelLayout.setVerticalGroup(
             jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtGender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(txtPatientId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(txtPatientName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(txtBirthday, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanelLayout.createSequentialGroup()
-                        .addComponent(txtGender, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGap(24, 24, 24))
         );
 
@@ -507,7 +506,7 @@ public class PatientServiceView extends javax.swing.JFrame {
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 579, Short.MAX_VALUE)
                             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
@@ -612,6 +611,12 @@ public class PatientServiceView extends javax.swing.JFrame {
         if (isNew) {
             txtId.setText("" + entity.getId());
         }
+        InvoiceEntity iv = InvoiceEntity.getByPatient(entity.getPatientId(), false);
+        if(iv != null && !iv.recalculate()){
+            showMsg("NOT CALCULATE INVOICE!");
+            return;
+        }
+       
         setSuccessMsg();
         showMsg("Success");
         log.warning("Save Success!");
@@ -690,7 +695,7 @@ public class PatientServiceView extends javax.swing.JFrame {
         entity.setId(isNew ? -1 : Integer.parseInt(txtId.getText()));
         KeyNamePair servicePair = (KeyNamePair) jComboService.getModel().getSelectedItem();
         entity.setServiceId(Integer.parseInt(servicePair.getID()));
-        KeyNamePair roomPair = (KeyNamePair) jComboService.getModel().getSelectedItem();
+        KeyNamePair roomPair = (KeyNamePair) jComboBoxRoom.getModel().getSelectedItem();
         entity.setRoomId(Integer.parseInt(roomPair.getID()));
         entity.setQuantity(new BigDecimal(txtQuantity.getText()));
         entity.setPatientId(patientId);
@@ -775,7 +780,8 @@ public class PatientServiceView extends javax.swing.JFrame {
                 + " FROM HIS_Patient_Service s"
                 + " INNER JOIN HIS_Service hs on s.HIS_Service_ID = hs.HIS_Service_ID"
                 + " LEFT JOIN HIS_Room hr on hr.HIS_Room_ID = s.HIS_Room_ID"
-                + " WHERE s.IsDeleted = 'N' AND s.HIS_PatientHistory_ID = " + patientId;
+                + " WHERE s.IsDeleted = 'N' AND s.HIS_PatientHistory_ID = " + patientId
+                + " ORDER BY s.HIS_Patient_Service_ID";
         log.warning(sql);
         PreparedStatement ptsm = null;
         ResultSet rs = null;
@@ -903,7 +909,7 @@ public class PatientServiceView extends javax.swing.JFrame {
     private javax.swing.JLabel jlableMsg;
     private javax.swing.JTextField txtAmount;
     private javax.swing.JTextField txtBirthday;
-    private javax.swing.JTextPane txtGender;
+    private javax.swing.JTextField txtGender;
     private javax.swing.JTextField txtId;
     private javax.swing.JRadioButton txtIsPaid;
     private javax.swing.JTextField txtPatientId;

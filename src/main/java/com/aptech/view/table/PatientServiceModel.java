@@ -6,7 +6,6 @@
 package com.aptech.view.table;
 
 import com.aptech.entity.PatientServiceEntity;
-import com.aptech.entity.ServiceEntity;
 import javax.swing.table.DefaultTableModel;
 import org.apache.commons.lang3.StringUtils;
 
