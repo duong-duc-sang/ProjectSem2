@@ -1,17 +1,18 @@
 CREATE TABLE AP_User
 (
-    AP_User_ID numeric(10)                     not null
+    AP_User_ID numeric(10)
         constraint ad_user_pkey primary key,
-    name       varchar(40)                     not null,
-    value      varchar(40)                     not null,
-    FullName varchar(250),
-    Email varchar(250),
-    Tel_no varchar(20),
-    created    timestamp   default statement_timestamp(),
-    createdby  numeric(10) default NULL::numeric,
-    updated    timestamp   default statement_timestamp(),
-    updatedBy  numeric(10) default NULL::numeric,
-    isactive   char        default 'Y'::bpchar not null,
+    Name       varchar(40)                     not null,
+    Value      varchar(40),
+    password   varchar(20)                     not null,
+    FullName   varchar(250),
+    Email      varchar(250),
+    Tel_no     varchar(20),
+    Created    timestamp   default statement_timestamp(),
+    Createdby  numeric(10) default NULL::numeric,
+    Updated    timestamp   default statement_timestamp(),
+    UpdatedBy  numeric(10) default NULL::numeric,
+    IsActive   char        default 'Y'::bpchar not null,
     IsDeleted  char        default 'N'::bpchar not null
 );
 
@@ -19,120 +20,145 @@ CREATE TABLE HIS_PatientHistory
 (
     HIS_PatientHistory_ID numeric(10)                     not null
         constraint HIS_PatientHistory_pkey primary key,
-    name                  varchar(250)                    not null,
-    value                 varchar(40)                     not null,
-    HIS_PatientDocument   varchar(40)                     not null,
+    Name                  varchar(250)                    not null,
+    Value                 varchar(40)                     not null,
+    PatientDocument       varchar(40)                     not null,
     Address               varchar(250),
+    Gender                varchar(10),
     Tel_No                varchar(20),
     ID_No                 varchar(20),
-    BirthDay timestamp not null ,
-    HIS_Department_ID     numeric(10),
-    age numeric(3),
-    HIS_Gender varchar(10),
-    regDate timestamp,
-    timeGoin timestamp,
-    timeGoOut timestamp,
+    BirthDay              timestamp                       not null,
+    BirthdayStr           varchar(20),
+    Age                   numeric(3),
 
-    created               timestamp   default statement_timestamp(),
-    createdby             numeric(10) default NULL::numeric,
-    updated               timestamp   default statement_timestamp(),
-    updatedBy             numeric(10) default NULL::numeric,
-    isactive              char        default 'Y'::bpchar not null,
+    Department_ID         numeric(10),
+
+
+    TimeGoIn              timestamp,
+    TimeGoOut             timestamp,
+
+    Created               timestamp   default statement_timestamp(),
+    Createdby             numeric(10) default NULL::numeric,
+    Updated               timestamp   default statement_timestamp(),
+    UpdatedBy             numeric(10) default NULL::numeric,
+    IsActive              char        default 'Y'::bpchar not null,
     IsDeleted             char        default 'N'::bpchar not null
 );
 
 
 CREATE TABLE HIS_Invoice
 (
-    HIS_Invoice           numeric(10)                     not null
+    HIS_Invoice_ID        numeric(10)                     not null
         constraint his_invoice_pkey primary key,
     HIS_PatientHistory_ID numeric(10)                     not null
         constraint PatientHistory_ivoice
             references HIS_PatientHistory,
-    HIS_PatientDocument   varchar(40)                     not null,
-    PatientValue          varchar(40)                     not null,
-    ToltalPrice           numeric     default 0::numeric,
+    TotalPrice            numeric     default 0::numeric,
     AMount                numeric     default 0::numeric,
     IsPaid                char        default 'N'         not null
         constraint his_invoice_ispaid_check
             check (ispaid = ANY (ARRAY ['Y'::bpchar, 'N'::bpchar])),
 
-
-    created               timestamp   default statement_timestamp(),
-    createdby             numeric(10) default NULL::numeric,
-    updated               timestamp   default statement_timestamp(),
-    updatedBy             numeric(10) default NULL::numeric,
-    isactive              char        default 'Y'::bpchar not null,
+    PayTime               timestamp   default NULL::TIMESTAMP,
+    Cashier_User_ID       numeric(10) default NULL::numeric,
+    Status                varchar(20),
+    Created               timestamp   default statement_timestamp(),
+    Createdby             numeric(10) default NULL::numeric,
+    Updated               timestamp   default statement_timestamp(),
+    UpdatedBy             numeric(10) default NULL::numeric,
+    IsActive              char        default 'Y'::bpchar not null,
     IsDeleted             char        default 'N'::bpchar not null
 );
 
 CREATE TABLE HIS_Patient_Service
 (
-    HIS_Patient_Service_ID           numeric(10)                     not null
+    HIS_Patient_Service_ID numeric(10)                     not null
         constraint HIS_Patient_Service_pkey primary key,
-    HIS_PatientHistory_ID numeric(10)                     not null
+    HIS_PatientHistory_ID  numeric(10)                     not null
         constraint Patient_Service
             references HIS_PatientHistory,
-    HIS_PatientDocument   varchar(40)                     not null,
-    PatientValue          varchar(40)                     not null,
-    Quantity numeric default 0::numeric,
-    UnitPrice numeric,
-    ToltalPrice           numeric     default 0::numeric,
-    AMount                numeric     default 0::numeric,
-    IsPaid                char        default 'N'         not null
+    Quantity               numeric     default 0::numeric,
+    UnitPrice              numeric,
+    TotalPrice             numeric     default 0::numeric,
+    AMount                 numeric     default 0::numeric,
+    IsPaid                 char        default 'N'         not null
         constraint his_invoice_ispaid_check
             check (ispaid = ANY (ARRAY ['Y'::bpchar, 'N'::bpchar])),
 
-    HIS_Room_ID numeric(10),
-    HIS_Invoice_ID numeric(10),
-    HIS_Service_ID numeric(10),
-    ServiceName varchar(500),
-    Value varchar(40),
-    Docdate timestamp,
-    ActDate timestamp,
-    sequenceNo numeric,
-    created               timestamp   default statement_timestamp(),
-    createdby             numeric(10) default NULL::numeric,
-    updated               timestamp   default statement_timestamp(),
-    updatedBy             numeric(10) default NULL::numeric,
-    isactive              char        default 'Y'::bpchar not null,
-    IsDeleted             char        default 'N'::bpchar not null
+    HIS_Room_ID            numeric(10),
+    HIS_Invoice_ID         numeric(10),
+    HIS_Service_ID         numeric(10),
+    Docdate                timestamp,
+    ActDate                timestamp,
+    SequenceNo             numeric,
+    Created                timestamp   default statement_timestamp(),
+    Createdby              numeric(10) default NULL::numeric,
+    Updated                timestamp   default statement_timestamp(),
+    UpdatedBy              numeric(10) default NULL::numeric,
+    IsActive               char        default 'Y'::bpchar not null,
+    IsDeleted              char        default 'N'::bpchar not null
 );
 
 CREATE TABLE HIS_Service
 (
-    HIS_Service_ID           numeric(10)                     not null
+    HIS_Service_ID numeric(10)                     not null
         constraint HIS_Service_pkey primary key,
-    name                  varchar(500)                    not null,
-    value                 varchar(40)                     not null,
-    UnitPrice numeric,
-
-    created               timestamp   default statement_timestamp(),
-    createdby             numeric(10) default NULL::numeric,
-    updated               timestamp   default statement_timestamp(),
-    updatedBy             numeric(10) default NULL::numeric,
-    isactive              char        default 'Y'::bpchar not null,
-    IsDeleted             char        default 'N'::bpchar not null
+    name           varchar(500)                    not null,
+    value          varchar(40)                     not null,
+    UnitPrice      numeric,
+    ServiceType    varchar(50),
+    Created        timestamp   default statement_timestamp(),
+    Createdby      numeric(10) default NULL::numeric,
+    Updated        timestamp   default statement_timestamp(),
+    UpdatedBy      numeric(10) default NULL::numeric,
+    IsActive       char        default 'Y'::bpchar not null,
+    IsDeleted      char        default 'N'::bpchar not null
 );
 
 CREATE TABLE HIS_Room
 (
-    HIS_Room_ID           numeric(10)                     not null
+    HIS_Room_ID numeric(10)                     not null
         constraint HIS_Room_pkey primary key,
-    name                  varchar(500)                    not null,
-    value                 varchar(40)                     not null,
-    Location VARCHAR(500),
+    name        varchar(500)                    not null,
+    value       varchar(40)                     not null,
+    Location    VARCHAR(500),
 
-    created               timestamp   default statement_timestamp(),
-    createdby             numeric(10) default NULL::numeric,
-    updated               timestamp   default statement_timestamp(),
-    updatedBy             numeric(10) default NULL::numeric,
-    isactive              char        default 'Y'::bpchar not null,
-    IsDeleted             char        default 'N'::bpchar not null
+    Created     timestamp   default statement_timestamp(),
+    Createdby   numeric(10) default NULL::numeric,
+    Updated     timestamp   default statement_timestamp(),
+    UpdatedBy   numeric(10) default NULL::numeric,
+    IsActive    char        default 'Y'::bpchar not null,
+    IsDeleted   char        default 'N'::bpchar not null
 );
 
 
+CREATE TABLE AP_Role
+(
+    AP_Role_ID numeric(10)                     not null
+        constraint AP_Role_pkey primary key,
+    name       varchar(500)                    not null,
+    Created    timestamp   default statement_timestamp(),
+    Createdby  numeric(10) default NULL::numeric,
+    Updated    timestamp   default statement_timestamp(),
+    UpdatedBy  numeric(10) default NULL::numeric,
+    IsActive   char        default 'Y'::bpchar not null,
+    IsDeleted  char        default 'N'::bpchar not null
+);
 
-drop table HIS_Patient_Service; cascade ;
-
-
+CREATE TABLE AP_User_Roles
+(
+    AP_User_Roles_ID numeric(10)                     not null
+        constraint AP_UserRole_pkey primary key,
+    AP_User_ID       numeric(10)                     not null
+        constraint User_UserRoles
+            references AP_User,
+    AP_Role_ID       numeric(10)                     not null
+        constraint Role_UserRoles
+            references AP_Role,
+    Created          timestamp   default statement_timestamp(),
+    Createdby        numeric(10) default NULL::numeric,
+    Updated          timestamp   default statement_timestamp(),
+    UpdatedBy        numeric(10) default NULL::numeric,
+    IsActive         char        default 'Y'::bpchar not null,
+    IsDeleted        char        default 'N'::bpchar not null
+);
