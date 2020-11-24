@@ -7,17 +7,22 @@ package com.aptech.view;
 
 import com.aptech.db.DB;
 import com.aptech.entity.MHISPatientHistory;
-import com.aptech.utils.ReportUtil;
-import com.aptech.utils.Util;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import com.aptech.entity.PatientEntity;
+import com.aptech.view.table.NumberTableCellRender;
+import com.aptech.view.table.PatientServiceModel;
+import java.awt.Color;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
+import java.util.Vector;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.JTableHeader;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -31,11 +36,127 @@ import net.sf.jasperreports.view.JasperViewer;
  */
 public class ReceptionPatientlView extends javax.swing.JFrame {
 
+    private static final Logger log = Logger.getLogger(ReceptionPatientlView.class.getName());
+    PatientServiceModel serviceModel;
+    private int patientId = 0;
+    int currentPage = 0;
+    private int offset = 0;
+    private int totalRow = 0;
+    private static final SimpleDateFormat fm = new SimpleDateFormat("yyyy/MM/dd");
+
     /**
      * Creates new form PatientFrame
      */
     public ReceptionPatientlView() {
         initComponents();
+        initTableService();
+    }
+
+    private void initTableService() {
+        serviceModel = new PatientServiceModel();
+        jTableService.setModel(serviceModel);
+        JTableHeader header = jTableService.getTableHeader();
+        header.setBackground(Color.black);
+        header.setForeground(Color.BLUE);
+        loadServiceData();
+        int column = jTableService.getColumnCount();
+        for (int i = 0; i < column; i++) {
+            jTableService.getColumnModel().getColumn(i).setCellRenderer(new NumberTableCellRender());
+        }
+        totalRow = getTotalRow();
+        setJLabelTotalRow();
+    }
+
+    private void setJLabelTotalRow() {
+        jLabelTotalRow.setText(offset + "/" + totalRow + "rows");
+
+    }
+
+    private void loadServiceData() {
+        if (serviceModel.getDataVector() != null) {
+            serviceModel.getDataVector().removeAllElements();
+        }
+        if (txtId.getText() == null || txtId.getText().isEmpty()) {
+            return;
+        }
+        patientId = Integer.parseInt(txtId.getText());
+        String sql = "SELECT s.HIS_Patient_Service_ID, s.HIS_Service_ID, hs.Name as ServiceName, s.Quantity, hs.UnitPrice,"
+                + " s.TotalPrice, s.Amount, s.HIS_Room_ID, hr.Name as Room, s.DocDate, s.ActDate"
+                + " FROM HIS_Patient_Service s"
+                + " INNER JOIN HIS_Service hs on s.HIS_Service_ID = hs.HIS_Service_ID"
+                + " LEFT JOIN HIS_Room hr on hr.HIS_Room_ID = s.HIS_Room_ID"
+                + " WHERE s.IsDeleted = 'N' AND s.HIS_PatientHistory_ID = " + patientId;
+        PreparedStatement ptsm = null;
+        ResultSet rs = null;
+        try {
+            ptsm = DB.prepareStatement(sql);
+            rs = ptsm.executeQuery();
+            while (rs.next()) {
+                Vector v = new Vector();
+                v.add(rs.getInt("HIS_Patient_Service_ID"));
+                v.add(rs.getInt("HIS_Service_ID"));
+                v.add(rs.getString("ServiceName"));
+                v.add(rs.getBigDecimal("Quantity"));
+                v.add(rs.getBigDecimal("UnitPrice"));
+                v.add(rs.getBigDecimal("TotalPrice"));
+                v.add(rs.getBigDecimal("Amount"));
+                v.add(rs.getInt("HIS_Room_ID"));
+                v.add(rs.getString("Room"));
+                v.add(rs.getTimestamp("DocDate"));
+                v.add(rs.getTimestamp("ActDate"));
+                serviceModel.addRow(v);
+            }
+        } catch (SQLException e) {
+            log.warning("ERROR " + e.getMessage());
+        } finally {
+            DB.close(rs, ptsm);
+            rs = null;
+            ptsm = null;
+        }
+        serviceModel.fireTableDataChanged();
+        hidenColumn("HIS_Service_ID");
+        hidenColumn("HIS_Room_ID");
+    }
+
+    private void loadPatientData() {
+        StringBuilder sql = new StringBuilder("SELECT lag(HIS_PatientHistory_ID) OVER (ORDER BY HIS_PatientHistory_ID) as prevId, ")
+                .append("lead(HIS_PatientHistory_ID) OVER (ORDER BY HIS_PatientHistory_ID) as nextId, ")
+                .append(PatientEntity.getQueryHeaderTable()).append(" FROM ")
+                .append(PatientEntity.Table_Name)
+                .append(" WHERE IsDeleted = 'N' ORDER BY HIS_PatientHistory_ID OFFSET ? LIMIT 1");
+
+        PreparedStatement ptsm = null;
+        ResultSet rs = null;
+        try {
+            ptsm = DB.prepareStatement(sql.toString());
+            ptsm.setInt(1, offset);
+            rs = ptsm.executeQuery();
+            while (rs.next()) {
+                txtId.setText("" + rs.getInt("HIS_PatientHistory_ID"));
+                txtPatientDocument.setText(rs.getString("PatientDocument"));
+                txtName.setText(rs.getString("Name"));
+                txtBirthday.setText(fm.format(rs.getTimestamp("Birthday")));
+                txtAdress.setText(rs.getString("Address"));
+                txtTelNo.setText(rs.getString("Tel_No"));
+                txtIdNo.setText(rs.getString("ID_No"));
+            }
+        } catch (SQLException e) {
+        } finally {
+            DB.close(rs, ptsm);
+            rs = null;
+            ptsm = null;
+        }
+    }
+
+    private int getTotalRow() {
+        String sql = "SELECT count(*) FROM " + PatientEntity.Table_Name + " WHERE IsDeleted = 'N'";
+        return DB.getSQLValueEx(sql, null);
+    }
+
+    private void hidenColumn(String identifer) {
+        jTableService.getColumn(identifer).setMinWidth(0);
+        jTableService.getColumn(identifer).setMaxWidth(0);
+        jTableService.getColumn(identifer).setWidth(0);
     }
 
     /**
@@ -69,8 +190,12 @@ public class ReceptionPatientlView extends javax.swing.JFrame {
         btnPrint = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
         txtIdNo = new javax.swing.JTextField();
+        btnNew = new javax.swing.JButton();
+        btnNext = new javax.swing.JButton();
+        btnPrev = new javax.swing.JButton();
+        jLabelTotalRow = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jTableService = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Reception");
@@ -119,17 +244,12 @@ public class ReceptionPatientlView extends javax.swing.JFrame {
         jLabel2.setText("Gender");
 
         btnSave.setBackground(new java.awt.Color(16, 189, 241));
-        btnSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/add-icon.png"))); // NOI18N
+        btnSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/button-ok-icon.png"))); // NOI18N
         btnSave.setText("Save");
         btnSave.setEnabled(false);
         btnSave.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnSaveMouseClicked(evt);
-            }
-        });
-        btnSave.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSaveActionPerformed(evt);
             }
         });
 
@@ -155,6 +275,14 @@ public class ReceptionPatientlView extends javax.swing.JFrame {
 
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel8.setText("ID No");
+
+        btnNew.setIcon(new javax.swing.ImageIcon(getClass().getResource("/add-icon.png"))); // NOI18N
+        btnNew.setText("New");
+        btnNew.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnNewMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -193,13 +321,15 @@ public class ReceptionPatientlView extends javax.swing.JFrame {
                 .addGap(33, 33, 33)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(btnChoice, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnChoice, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(btnNew, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnEdit, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addComponent(btnPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(19, 19, 19))
         );
         jPanel2Layout.setVerticalGroup(
@@ -219,16 +349,21 @@ public class ReceptionPatientlView extends javax.swing.JFrame {
                     .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnEdit)
                     .addComponent(btnPrint))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(txtGender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtBirthday, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtAdress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(txtGender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtBirthday, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtAdress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4)))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(btnNew)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtTelNo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -240,13 +375,34 @@ public class ReceptionPatientlView extends javax.swing.JFrame {
 
         jPanel2Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jLabel1, jLabel2, jLabel3, jLabel4, jLabel5});
 
+        btnNext.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Button-Fast-Forward-icon.png"))); // NOI18N
+        btnNext.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnNextMouseClicked(evt);
+            }
+        });
+
+        btnPrev.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Fast-backward-icon.png"))); // NOI18N
+        btnPrev.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnPrevMouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabelTotalRow, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnPrev, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnNext, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -254,12 +410,19 @@ public class ReceptionPatientlView extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(30, 30, 30)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(28, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnNext)
+                            .addComponent(btnPrev)))
+                    .addComponent(jLabelTotalRow, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
         jScrollPane1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jTableService.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -270,7 +433,7 @@ public class ReceptionPatientlView extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(jTableService);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -288,15 +451,11 @@ public class ReceptionPatientlView extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 259, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
-
-    }//GEN-LAST:event_btnSaveActionPerformed
 
     private void txtNameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNameKeyPressed
         btnSave.setEnabled(true);
@@ -306,22 +465,20 @@ public class ReceptionPatientlView extends javax.swing.JFrame {
         if (!insertOrUpdatePatient()) {
             showMsg("Error");
             return;
-        } else {
-            showMsg("Succes");
-            clean();
         }
+
     }//GEN-LAST:event_btnSaveMouseClicked
 
     private void btnPrintMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPrintMouseClicked
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("HIS_Patient_Service_ID", 1008);
         parameters.put("HIS_PatientHistory_ID", 1007);
-         JasperReport jasperReport;
-         Connection conn = null;
-         try {
-             String url = "/home/ducsang/Aptech/ProjectSem2/src/main/resources/report/Test.jrxml";
+        JasperReport jasperReport;
+        Connection conn = null;
+        try {
+            String url = "/home/ducsang/Aptech/ProjectSem2/src/main/resources/report/Test.jrxml";
             InputStream inp = getClass().getResourceAsStream("/report/PhieuHuongDan.jrxml");
-            jasperReport = JasperCompileManager.compileReport(url);
+            jasperReport = JasperCompileManager.compileReport(inp);
             conn = DB.getConnection();
             JasperPrint jp = JasperFillManager.fillReport(jasperReport, parameters, conn);
             JasperViewer.viewReport(jp);
@@ -339,13 +496,54 @@ public class ReceptionPatientlView extends javax.swing.JFrame {
         f.setVisible(true);
     }//GEN-LAST:event_btnChoiceMouseClicked
 
+    private void btnNewMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnNewMouseClicked
+        clean();
+
+    }//GEN-LAST:event_btnNewMouseClicked
+
+    private void btnNextMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnNextMouseClicked
+        if (offset == totalRow) {
+            return;
+        }
+
+        loadUI();
+        offset++;
+        setJLabelTotalRow();
+        showMsg(offset +"");
+    }//GEN-LAST:event_btnNextMouseClicked
+
+    private void btnPrevMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPrevMouseClicked
+        if (offset <= 1) {
+            return;
+        }
+        --offset;
+        loadUI();
+        setJLabelTotalRow();
+        showMsg(offset +"");
+    }//GEN-LAST:event_btnPrevMouseClicked
+
+    private void loadUI() {
+        loadPatientData();
+        loadServiceData();
+    }
+
     private boolean insertOrUpdatePatient() {
         MHISPatientHistory ph = getEntity();
         if (ph == null) {
             return false;
         }
 
-        return ph.save();
+        if (!ph.save()) {
+            return false;
+        }
+        if (txtId.getText() == null || txtId.getText().isEmpty()) {
+            txtId.setText(ph.getId() + "");
+            txtPatientDocument.setText(ph.getPatientDocument());
+            totalRow = getTotalRow();
+            offset = totalRow;
+            setJLabelTotalRow();
+        }
+        return true;
     }
 
     private MHISPatientHistory getEntity() {
@@ -373,6 +571,7 @@ public class ReceptionPatientlView extends javax.swing.JFrame {
         txtTelNo.setText("");
         txtIdNo.setText("");
         txtBirthday.setText("");
+        serviceModel.getDataVector().removeAllElements();
     }
 
     private void showMsg(String msg) {
@@ -385,6 +584,9 @@ public class ReceptionPatientlView extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChoice;
     private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnNew;
+    private javax.swing.JButton btnNext;
+    private javax.swing.JButton btnPrev;
     private javax.swing.JButton btnPrint;
     private javax.swing.JButton btnSave;
     private javax.swing.JLabel jLabel1;
@@ -395,10 +597,11 @@ public class ReceptionPatientlView extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabelTotalRow;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTableService;
     private javax.swing.JTextField txtAdress;
     private javax.swing.JTextField txtBirthday;
     private javax.swing.JComboBox<String> txtGender;

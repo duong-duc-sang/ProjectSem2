@@ -30,9 +30,18 @@ public class PatientEntity extends BaseEntity implements I_Persistent {
     private String idNo;
     private String telNo;
     private int departmentId;
+    private String diseaseDiagnostic;
+    private String height;
+    private String weight;
+    private String bloodpressure;
+    private String pulse;
+    private String temperature;
+    private String checkUpBreath;
+    private String his_BloodType;
 
     public static final String COLUMNNAME_HIS_PatientHistory_ID = "HIS_PatientHistory_ID";
-    public PatientEntity(){
+
+    public PatientEntity() {
         super();
     }
     public static String COLUMNNAME_Name = "Name";
@@ -162,13 +171,93 @@ public class PatientEntity extends BaseEntity implements I_Persistent {
         this.timeGoOut = timeGoOut;
     }
 
+    public static String COLUMNNAME_DiseaseDiagnostic = "DiseaseDiagnostic";
+
+    public String getDiseaseDiagnostic() {
+        return diseaseDiagnostic;
+    }
+
+    public void setDiseaseDiagnostic(String diseaseDiagnostic) {
+        this.diseaseDiagnostic = diseaseDiagnostic;
+    }
+
+    public static String COLUMNNAME_Height = "Height";
+
+    public String getHeight() {
+        return height;
+    }
+
+    public void setHeight(String height) {
+        this.height = height;
+    }
+
+    public static String COLUMNNAME_Weight = "Weight";
+
+    public String getWeight() {
+        return weight;
+    }
+
+    public void setWeight(String weight) {
+        this.weight = weight;
+    }
+
+    public static String COLUMNNAME_Bloodpressure = "Bloodpressure";
+
+    public String getBloodpressure() {
+        return bloodpressure;
+    }
+
+    public void setBloodpressure(String bloodpressure) {
+        this.bloodpressure = bloodpressure;
+    }
+
+    public static String COLUMNNAME_Pulse = "Pulse";
+
+    public String getPulse() {
+        return pulse;
+    }
+
+    public void setPulse(String pulse) {
+        this.pulse = pulse;
+    }
+
+    public static String COLUMNNAME_Temperature = "Temperature";
+
+    public String getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(String temperature) {
+        this.temperature = temperature;
+    }
+
+    public static String COLUMNNAME_CheckUpBreath = "CheckUpBreath";
+
+    public String getCheckUpBreath() {
+        return checkUpBreath;
+    }
+
+    public void setCheckUpBreath(String checkUpBreath) {
+        this.checkUpBreath = checkUpBreath;
+    }
+
+    public static String COLUMNNAME_His_BloodType = "HIS_BloodType";
+
+    public String getHis_BloodType() {
+        return his_BloodType;
+    }
+
+    public void setHis_BloodType(String his_BloodType) {
+        this.his_BloodType = his_BloodType;
+    }
+
     @Override
 
     public String getTableName() {
         return Table_Name;
     }
-    
-    public static String[] columnNames(){
+
+    public static String[] columnNames() {
         List<String> columns = new ArrayList<>();
         columns.add(Table_Name + "_ID");
         columns.add(COLUMNNAME_Name);
@@ -188,9 +277,9 @@ public class PatientEntity extends BaseEntity implements I_Persistent {
         columns.toArray(values);
         return values;
     }
-    
-    public static String getQueryHeaderTable(){
-         String[] columns = columnNames();
+
+    public static String getQueryHeaderTable() {
+        String[] columns = columnNames();
         return StringUtils.join(columns, ", ");
     }
 
@@ -222,7 +311,7 @@ public class PatientEntity extends BaseEntity implements I_Persistent {
 
     @Override
     protected String getColumnNameUpdate() {
-         List<String> columns = new ArrayList<>();
+        List<String> columns = new ArrayList<>();
         columns.add(COLUMNNAME_Name);
         columns.add(COLUMNNAME_Birthday);
         columns.add(COLUMNNAME_BirthdayStr);
@@ -241,7 +330,7 @@ public class PatientEntity extends BaseEntity implements I_Persistent {
 
     @Override
     protected Object[] getValueUpdate() {
-         List<Object> columns = new ArrayList<>();
+        List<Object> columns = new ArrayList<>();
         columns.add(getName());
         columns.add(getBirthday());
         columns.add(getBirthdayStr());
@@ -259,6 +348,5 @@ public class PatientEntity extends BaseEntity implements I_Persistent {
         columns.toArray(obs);
         return obs;
     }
-
 
 }
