@@ -5,10 +5,10 @@
  */
 package com.aptech.view;
 
+import javax.swing.DefaultComboBoxModel;
+
 import com.aptech.service.Login;
 import com.aptech.utils.KeyNamePair;
-import java.awt.event.KeyEvent;
-import javax.swing.DefaultComboBoxModel;
 
 /**
  *
@@ -17,6 +17,10 @@ import javax.swing.DefaultComboBoxModel;
 public class ChoiceRoleView extends javax.swing.JFrame {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8601136936597324235L;
+	/**
      * Creates new form ChoiceRoleView
      */
     

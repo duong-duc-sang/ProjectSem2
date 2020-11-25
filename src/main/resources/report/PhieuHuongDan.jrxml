@@ -3,7 +3,7 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.encoding" value="UTF-8"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="47"/>
+	<property name="ireport.y" value="0"/>
 	<property name="net.sf.jasperreports.export.pdf.javascript" value="this.print({bUI: true,bSilent: true,bShrinkToFit: false});"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="97"/>
@@ -384,14 +384,6 @@ Người bệnh khám theo thứ tự bàn 1 -> bàn 2.
 				</textElement>
 				<text><![CDATA[Chú ý:]]></text>
 			</staticText>
-			<subreport>
-				<reportElement x="228" y="101" width="160" height="14" uuid="7b1b47ce-59ea-4d96-8efb-da3d483d0872"/>
-				<subreportParameter name="AD_User_ID">
-					<subreportParameterExpression><![CDATA[$F{CREATEDBY}.intValue()]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Printor.jasper"]]></subreportExpression>
-			</subreport>
 			<staticText>
 				<reportElement key="" x="0" y="0" width="30" height="17" uuid="e34d5531-c6b9-4e0d-aba0-380c34db6940">
 					<printWhenExpression><![CDATA[]]></printWhenExpression>

@@ -117,7 +117,7 @@ public class InvoiceEntity extends BaseEntity {
     }
 
     public static String[] columnNames() {
-        List<String> columns = new ArrayList<>();
+        List<String> columns = new ArrayList<String>();
         columns.add(Table_Name + "_ID");
         columns.add(COLUMNNAME_HIS_PatientHistory_ID);
         columns.add(COLUMNNAME_TotalPrice);
@@ -140,7 +140,7 @@ public class InvoiceEntity extends BaseEntity {
 
     @Override
     protected Object[] getValueColumns() {
-        List<Object> ls = new ArrayList<>();
+        List<Object> ls = new ArrayList<Object>();
         ls.add(getId());
         ls.add(getPatientId());
         ls.add(getTotalPrice());
@@ -157,7 +157,7 @@ public class InvoiceEntity extends BaseEntity {
 
     @Override
     protected String getColumnNameUpdate() {
-        List<String> ls = new ArrayList<>();
+        List<String> ls = new ArrayList<String>();
         ls.add(COLUMNNAME_TotalPrice);
         ls.add(COLUMNNAME_Amount);
         ls.add(COLUMNNAME_PayTime);
@@ -171,7 +171,7 @@ public class InvoiceEntity extends BaseEntity {
 
     @Override
     protected Object[] getValueUpdate() {
-        List<Object> ls = new ArrayList<>();
+        List<Object> ls = new ArrayList<Object>();
         ls.add(getTotalPrice());
         ls.add(getAmount());
         ls.add(getPayTime());

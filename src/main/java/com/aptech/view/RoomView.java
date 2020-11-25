@@ -5,12 +5,6 @@
  */
 package com.aptech.view;
 
-import com.aptech.db.DB;
-import com.aptech.entity.RoomEntity;
-import com.aptech.entity.ServiceEntity;
-import com.aptech.utils.Const;
-import com.aptech.view.table.RoomModel;
-import com.aptech.view.table.ServiceModel;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.sql.PreparedStatement;
@@ -18,8 +12,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.util.logging.Logger;
+
 import javax.swing.JOptionPane;
 import javax.swing.table.JTableHeader;
+
+import com.aptech.db.DB;
+import com.aptech.entity.RoomEntity;
+import com.aptech.utils.Const;
+import com.aptech.view.table.RoomModel;
 
 /**
  *
@@ -27,7 +27,12 @@ import javax.swing.table.JTableHeader;
  */
 public class RoomView extends javax.swing.JFrame {
 
-    private static Logger log = Logger.getLogger(RoomView.class.getName());
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3065382005749021912L;
+
+	private static Logger log = Logger.getLogger(RoomView.class.getName());
 
     RoomModel tableModel;
     int currentPage = 0;

@@ -36,7 +36,11 @@ import net.sf.jasperreports.view.JasperViewer;
  */
 public class ReceptionPatientlView extends javax.swing.JFrame {
 
-    private static final Logger log = Logger.getLogger(ReceptionPatientlView.class.getName());
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 2284489573192150770L;
+	private static final Logger log = Logger.getLogger(ReceptionPatientlView.class.getName());
     PatientServiceModel serviceModel;
     private int patientId = 0;
     int currentPage = 0;
@@ -92,7 +96,7 @@ public class ReceptionPatientlView extends javax.swing.JFrame {
             ptsm = DB.prepareStatement(sql);
             rs = ptsm.executeQuery();
             while (rs.next()) {
-                Vector v = new Vector();
+                Vector<Object> v = new Vector<Object>();
                 v.add(rs.getInt("HIS_Patient_Service_ID"));
                 v.add(rs.getInt("HIS_Service_ID"));
                 v.add(rs.getString("ServiceName"));
@@ -473,12 +477,11 @@ public class ReceptionPatientlView extends javax.swing.JFrame {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("HIS_Patient_Service_ID", 1008);
         parameters.put("HIS_PatientHistory_ID", 1007);
-        JasperReport jasperReport;
         Connection conn = null;
         try {
             String url = "/home/ducsang/Aptech/ProjectSem2/src/main/resources/report/Test.jrxml";
-            InputStream inp = getClass().getResourceAsStream("/report/PhieuHuongDan.jrxml");
-            jasperReport = JasperCompileManager.compileReport(inp);
+            InputStream inp = getClass().getResourceAsStream("/report/Test.jrxml");
+            JasperReport jasperReport = JasperCompileManager.compileReport(inp);
             conn = DB.getConnection();
             JasperPrint jp = JasperFillManager.fillReport(jasperReport, parameters, conn);
             JasperViewer.viewReport(jp);

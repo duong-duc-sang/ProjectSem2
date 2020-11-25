@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PhieuHuongDanMain" pageWidth="421" pageHeight="595" columnWidth="421" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="3ac0b7b1-2024-4dff-9b02-ef15bcac3c9a">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.export.pdf.javascript" value="this.print({bUI: true,bSilent: true,bShrinkToFit: false});"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MatTW_Test"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="RECORD_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TableName" class="java.lang.String"/>
+	<parameter name="AD_User_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select HIS_Service_Union_ID,su.HIS_PATIENTHISTORY_ID from HIS_PatientService su
+left join his_patienthistory ph on ph.his_patienthistory_id=su.his_patienthistory_id
+where ph.His_patienthistory_id= $P{RECORD_ID}
+and su.isdeleted='N'
+and su.isactive='Y'
+and his_servicetype='CheckUp'
+and su.status <> 'Canceled'
+;]]>
+	</queryString>
+	<field name="his_service_union_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="his_service_union_id"/>
+	</field>
+	<field name="his_patienthistory_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="his_patienthistory_id"/>
+	</field>
+	<detail>
+		<band height="581">
+			<subreport>
+				<reportElement x="0" y="0" width="421" height="581" uuid="acf7db91-964a-4ca1-bff5-55528b1db6f8"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="RECORD_ID">
+					<subreportParameterExpression><![CDATA[$P{RECORD_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="AD_User_ID">
+					<subreportParameterExpression><![CDATA[$P{AD_User_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="TableName">
+					<subreportParameterExpression><![CDATA[$P{TableName}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="HIS_Service_Union_ID">
+					<subreportParameterExpression><![CDATA[$F{his_service_union_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="HIS_PATIENTHISTORY_ID">
+					<subreportParameterExpression><![CDATA[$F{his_patienthistory_id}.intValue()]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "PhieuHuongDan.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="14">
+			<textField>
+				<reportElement x="20" y="0" width="290" height="14" uuid="28d78b38-6b57-4bea-a04f-fa535c842748">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement>
+					<font fontName="Times New Roman" size="12" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Ngày in: " + new SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>
